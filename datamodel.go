@@ -6,55 +6,57 @@ import (
 	"time"
 )
 
-//dataModel represents the data structure to hold the OPC data
-type dataModel map[string]float64
-
 //data holds the data structure that is refreshed with OPC data.
 type data struct {
-	tags dataModel
+	tags map[string]interface{}
 	mu   sync.RWMutex
 }
 
 //Get is the thread-safe getter for the tags.
-func (d *data) Get(key string) (float64, bool) {
+func (d *data) Get(key string) (interface{}, bool) {
 	d.mu.RLock()
 	value, ok := d.tags[key]
 	d.mu.RUnlock()
 	return value, ok
 }
 
+//update is a helper function to update map
+func (d *data) update(conn OpcConnection) {
+	update := conn.Read()
+	d.mu.Lock()
+	for key, value := range update {
+		d.tags[key] = value
+	}
+	d.mu.Unlock()
+}
+
 //Sync synchronizes the opc server and stores the data into the data model.
 func (d *data) Sync(conn OpcConnection, refreshRate time.Duration) io.Closer {
 
-	close := make(chan bool)
-	done := make(chan bool)
-
-	ticker := time.NewTicker(refreshRate)
-
-	go func() {
+        control := NewControl()
+        ticker := time.NewTicker(refreshRate)
+        
+        d.update(conn)
+	
+        go func() {
 		for {
 			select {
 			case <-ticker.C:
-				update := conn.Read()
-				d.mu.Lock()
-				for key, value := range update {
-					d.tags[key] = value
-				}
-				d.mu.Unlock()
-			case <-close:
+				d.update(conn)
+			case <-control.close:
 				ticker.Stop()
-				done <- true
+				control.done <- true
 				return
 			}
 		}
 	}()
 
-	return &control{close, done}
+	return control
 }
 
 //NewDataModel returns an OPC Data struct.
 func NewDataModel() data {
-	return data{tags: make(dataModel)}
+	return data{tags: make(map[string]interface{})}
 }
 
 type control struct {
@@ -70,6 +72,6 @@ func (c *control) Close() error {
 	return nil
 }
 
-func newControl() *control {
-	return nil
+func NewControl() *control {
+        return &control{close: make(chan bool), done: make(chan bool)}
 }

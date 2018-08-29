@@ -1,0 +1,38 @@
+---
+server: "Graybox.Simulator"
+nodes: ["localhost", "127.0.0.1"]
+monitoring: ""
+influx:
+ addr: "http://[2a0a:e5c0:2:12:400:f0ff:fea9:c3c5]:8086"
+ #addr: "http://localhost:8086"
+ database: test
+ precision: s
+measurements: 
+ numeric:
+   - tags: {type: sin}
+     fields: {float: "[numeric.sin.float]", int: "[numeric.sin.int32]"}
+   - tags: {type: saw}
+     fields: {float: "[numeric.saw.float]", int: "[numeric.saw.int32]"}
+   - tags: {type: triangle}
+     fields: {float: "[numeric.triangle.float]", int: "[numeric.triangle.int32]"}
+   - tags: {type: unity}
+     fields: {float: "[numeric.triangle.float] / [numeric.triangle.int32]"}
+ textual:
+   - tags: {type: color}
+     fields: {text: "[textual.color]", brown: "[textual.color] == 'Brown'"}        
+   - tags: {type: number}
+     fields: {text: "[textual.number]"}        
+   - tags: {type: weekday}
+     fields: {text: "[textual.weekday]"}        
+   - tags: {type: random}
+     fields: {text: "[textual.random]"}        
+ time:
+   - tags: {type: time}
+     fields: {current: "[time.current]", random: "[time.random]"}
+ enum:
+   - tags: {type: color}
+     fields: {text: "[enum.color]"}        
+   - tags: {type: number}
+     fields: {text: "[enum.number]"}        
+   - tags: {type: weekday}
+     fields: {text: "[enum.weekday]"}        

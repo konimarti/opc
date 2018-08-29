@@ -39,6 +39,7 @@ func StartMonitoring(port string) {
 		p = port
 	}
 	go func() {
+		log.Println("Listening on", p)
 		http.Handle("/metrics", promhttp.Handler())
 		log.Fatal(http.ListenAndServe(p, nil))
 	}()
