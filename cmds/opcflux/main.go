@@ -105,8 +105,6 @@ func main() {
 	conn := opc.NewConnection(
 		conf.Server,
 		conf.Nodes,
-		//"INAT TcpIpH1 OPC Server",
-		//[]string{"KFN34.kalkfabrik.local", "KFN35.kalkfabrik.local"},
 		tags,
 	)
 	if conn == nil {
