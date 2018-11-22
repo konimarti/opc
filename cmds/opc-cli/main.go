@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	//var server, node string
 
 	var cmdList = &cobra.Command{
 		Use:   "list [node]",
@@ -50,8 +49,6 @@ func main() {
 	}
 
 	var rootCmd = &cobra.Command{Use: "opc-cli"}
-	//rootCmd.PersistentFlags().StringVarP(&server, "server", "s", "Graybox.Simulator", "ProgID for OPC Server")
-	//rootCmd.PersistentFlags().StringVarP(&node, "node", "n", "localhost", "Node for OPC Server")
 
 	rootCmd.AddCommand(cmdList, cmdInfo)
 	rootCmd.Execute()
