@@ -3,16 +3,18 @@ Read process and automation data in Go from an OPC server for monitoring and dat
 
 ```go get github.com/konimarti/opc```
 
-## Prerequisites
+## Installation
 
-* Install go-ole with the 32-bit fix. There is a pull request #155 in go-ole with the necessary changes:
-  1. ```go get github.com/go-ole/go-ole ```
-  2. Go to $GOPATH/src/github.com/go-ole/go-ole
-  3. Get the pull request: ```git fetch origin pull/155/head:pr155```
-  4. Check out the branch: ```git checkout pr155```
-* Start Gray Simulator v1.8 (OPC Simulation Server; this is optional but necessary for testing); can be obtained [here](http://www.gray-box.net/download_graysim.php).
-* Set Go architecture to 32-bit with ```$ENV:GOARCH=386```
-* Get the OPC package: ```go get github.com/konimarti/opc```
+* Set the Go compilation architecture based on the version of your ```OPCDAAuto.dll```:
+  - If the ```OPCDAAuto.dll``` is in ```C:\Windows\System32```, use ```$ENV:GOARCH="amd64"```
+  - If the ```OPCDAAuto.dll``` is in ```C:\Windows\SysWOW64```, use ```$ENV:GOARCH="386"```
+* Note that this package currently only supports 386
+* ```go get github.com/konimarti/opc```
+
+## Prerequisities and Testing
+
+* OPC DA Automation Wrapper 2.02 should be installed on your system (```ÒPCDAAuto.dll```); this DLL is usually shipped as part of the OPC Core Components of your OPC Server.
+* Start Graybox Simulator v1.8 (OPC Simulation Server; this is optional but necessary for testing); can be obtained for free [here](http://www.gray-box.net/download_graysim.php).
 * Test code with ```go test -v```
 
 ## Example 
@@ -27,9 +29,9 @@ import (
 
 func main() {
 	client := opc.NewConnection(
-		"Graybox.Simulator",
-		[]string{"localhost"},
-		[]string{"numeric.sin.int64", "numeric.saw.float"},
+		"Graybox.Simulator", // ProgId
+		[]string{"localhost"}, //  OPC servers nodes
+		[]string{"numeric.sin.int64", "numeric.saw.float"}, // slice of OPC tags
 	)
 	defer client.Close()
 
