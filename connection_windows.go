@@ -184,6 +184,23 @@ func (ao *AutomationObject) IsConnected() bool {
 	return true
 }
 
+//GetOPCServers returns a list of Prog ID on the specified node
+func (ao *AutomationObject) GetOPCServers(node string) []string {
+	progids, err := oleutil.CallMethod(ao.object, "GetOPCServers", node)
+	if err != nil {
+		log.Println("GetOPCServers call failed.")
+		return []string{}
+	}
+
+	var servers_found []string
+	for _, v := range progids.ToArray().ToStringArray() {
+		if v != "" {
+			servers_found = append(servers_found, v)
+		}
+	}
+	return servers_found
+}
+
 //Close releases the OLE objects in the AutomationObject.
 func (ao *AutomationObject) Close() {
 	ao.object.Release()
