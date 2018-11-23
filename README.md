@@ -5,13 +5,13 @@ Read process and automation data in Go from an OPC server for monitoring and dat
 
 ## Installation
 
-* Set the Go compilation architecture based on the version of your ```OPCDAAuto.dll```:
+* Set ```$GOARCH``` based on your ```OPCDAAuto.dll``` in Powershell:
   - If the ```OPCDAAuto.dll``` is in ```C:\Windows\System32```, use ```$ENV:GOARCH="amd64"```
   - If the ```OPCDAAuto.dll``` is in ```C:\Windows\SysWOW64```, use ```$ENV:GOARCH="386"```
 * Note that this package currently only supports 386
 * ```go get github.com/konimarti/opc```
 
-## Prerequisities and Testing
+## prerequisites and Testing
 
 * OPC DA Automation Wrapper 2.02 should be installed on your system (```ÒPCDAAuto.dll```); this DLL is usually shipped as part of the OPC Core Components of your OPC Server.
 * Start Graybox Simulator v1.8 (OPC Simulation Server; this is optional but necessary for testing); can be obtained for free [here](http://www.gray-box.net/download_graysim.php).
