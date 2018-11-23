@@ -3,6 +3,7 @@ package api_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -98,6 +99,72 @@ func TestGetTag(t *testing.T) {
 		t.Errorf("Quality code not ok. Got %v", item.Quality)
 	}
 }
+
+// test write an item, route: /tag/{id}
+func TestUpdateTagNumeric(t *testing.T) {
+
+	var config = []struct {
+		Tag     string
+		Payload []byte
+		Want    interface{}
+	}{
+		{
+			Tag:     "storage.numeric.reg01",
+			Payload: []byte(`0.12`),
+			Want:    0.12,
+		},
+		{
+			Tag:     "storage.numeric.reg02",
+			Payload: []byte(`2`),
+			Want:    2.0,
+		},
+		{
+			Tag:     "storage.string.reg02",
+			Payload: []byte(`"Hello"`),
+			Want:    "Hello",
+		},
+		{
+			Tag:     "storage.bool.reg02",
+			Payload: []byte(`true`),
+			Want:    true,
+		},
+	}
+
+	for _, cfg := range config {
+		// preparation step
+		tagStr := fmt.Sprintf("[\"%s\"]", cfg.Tag)
+		req, _ := http.NewRequest("POST", "/tag", bytes.NewBuffer([]byte(tagStr)))
+		executeRequest(req)
+
+		// write value to tag
+		reqStr := fmt.Sprintf("/tag/%s", cfg.Tag)
+		req, _ = http.NewRequest("PUT", reqStr, bytes.NewBuffer(cfg.Payload))
+		response := executeRequest(req)
+
+		checkResponseCode(t, http.StatusOK, response.Code)
+
+		var m map[string]interface{}
+		json.Unmarshal(response.Body.Bytes(), &m)
+
+		if m["result"] != "updated" {
+			t.Errorf("Expected result to be 'updated'. Got '%v'", m["result"])
+		}
+
+		// check if value is what we want
+		req, _ = http.NewRequest("GET", reqStr, nil)
+		response = executeRequest(req)
+
+		checkResponseCode(t, http.StatusOK, response.Code)
+
+		var item opc.Item
+		json.Unmarshal(response.Body.Bytes(), &item)
+		if item.Value != cfg.Want {
+			t.Errorf("Value read and value written to tag are not the same. Got %v. Expected %v", item.Value, cfg.Want)
+		}
+	}
+}
+
+// test delete TODO
 
 // helper functions
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {

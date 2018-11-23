@@ -15,9 +15,10 @@ func init() {
 //Embedded type for mock servers
 type emptyServer struct{}
 
-func (es *emptyServer) Add(...string) error { return nil }
-func (es *emptyServer) Remove(string)       {}
-func (es *emptyServer) Close()              {}
+func (es *emptyServer) Add(...string) error             { return nil }
+func (es *emptyServer) Remove(string)                   {}
+func (es *emptyServer) Write(string, interface{}) error { return nil }
+func (es *emptyServer) Close()                          {}
 
 //OpcMockServerStatic implements an OPC Server that returns the index value plus 1 for each tag.
 type OpcMockServerStatic struct {

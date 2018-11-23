@@ -24,6 +24,7 @@ func (a *App) Initialize(conn opc.OpcConnection) {
 	a.Router.HandleFunc("/tag", a.createTag).Methods("POST")        // Add(...)
 	a.Router.HandleFunc("/tag/{id}", a.getTag).Methods("GET")       // ReadItem(id)
 	a.Router.HandleFunc("/tag/{id}", a.deleteTag).Methods("DELETE") // Remove(id)
+	a.Router.HandleFunc("/tag/{id}", a.updateTag).Methods("PUT")    // Write(id, value)
 }
 
 // Run starts serving the API
@@ -41,7 +42,7 @@ func (a *App) createTag(w http.ResponseWriter, r *http.Request) {
 	var tags []string
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&tags); err != nil {
-		fmt.Println(tags)
+		fmt.Println("tags received:", tags)
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -71,6 +72,28 @@ func (a *App) getTag(w http.ResponseWriter, r *http.Request) {
 func (a *App) deleteTag(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	a.Conn.Remove(vars["id"])
+	respondWithJSON(w, http.StatusOK, map[string]interface{}{"result": "removed"})
+}
+
+// updateTag write value the opc.Item for the given tag id, route: /tag/{id}
+func (a *App) updateTag(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	var value interface{}
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&value); err != nil {
+		fmt.Println("value received:", value)
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+
+	err := a.Conn.Write(vars["id"], value)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "value could not be written to tag")
+		return
+	}
+	respondWithJSON(w, http.StatusOK, map[string]interface{}{"result": "updated"})
 }
 
 // responsWithError is a helper function to return a JSON error

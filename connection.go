@@ -35,6 +35,7 @@ type OpcConnection interface {
 	Remove(string)
 	Read() map[string]interface{}
 	ReadItem(string) Item
+	Write(string, interface{}) error
 	Close()
 }
 

@@ -200,6 +200,18 @@ func (ai *AutomationItems) readFromOpc(opcitem *ole.IDispatch) (Item, error) {
 	}, nil
 }
 
+//writeToOPC writes value to opc tag and return an error
+func (ai *AutomationItems) writeToOpc(opcitem *ole.IDispatch, value interface{}) error {
+	_, err := oleutil.CallMethod(opcitem, "Write", value)
+	if err != nil {
+		// TODO: Prometheus Monitoring
+		//opcWritesCounter.WithLabelValues("failed").Inc()
+		return err
+	}
+	//opcWritesCounter.WithLabelValues("failed").Inc()
+	return nil
+}
+
 //Close closes the OLE objects in AutomationItems.
 func (ai *AutomationItems) Close() {
 	for key, opcitem := range ai.items {
@@ -243,6 +255,19 @@ func (conn *opcConnectionImpl) ReadItem(tag string) Item {
 		log.Printf("Tag %s not found. Add it first before reading it.", tag)
 	}
 	return Item{}
+}
+
+//Write writes a value to the OPC Server.
+func (conn *opcConnectionImpl) Write(tag string, value interface{}) error {
+	conn.mu.Lock()
+	defer conn.mu.Unlock()
+	opcitem, ok := conn.AutomationItems.items[tag]
+	if ok {
+		return conn.AutomationItems.writeToOpc(opcitem, value)
+	} else {
+		log.Printf("Tag %s not found. Add it first before writing to it.", tag)
+	}
+	return errors.New("No Write performed")
 }
 
 //Read returns a map of the values of all added tags.
