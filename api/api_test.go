@@ -27,6 +27,7 @@ func TestMain(m *testing.M) {
 
 	a = api.App{}
 	a.Initialize(client)
+	a.RW = true //active read-write
 
 	// run "main"
 	code := m.Run()
@@ -101,7 +102,7 @@ func TestGetTag(t *testing.T) {
 }
 
 // test write an item, route: /tag/{id}
-func TestUpdateTagNumeric(t *testing.T) {
+func TestUpdateTag(t *testing.T) {
 
 	var config = []struct {
 		Tag     string
@@ -162,6 +163,30 @@ func TestUpdateTagNumeric(t *testing.T) {
 			t.Errorf("Value read and value written to tag are not the same. Got %v. Expected %v", item.Value, cfg.Want)
 		}
 	}
+}
+
+// Test update with read only
+func TestUpdateTagReadOnly(t *testing.T) {
+	a.RW = false
+
+	// preparation step
+	req, _ := http.NewRequest("POST", "/tag", bytes.NewBuffer([]byte("[\"storage.numeric.reg01\"]")))
+	executeRequest(req)
+
+	// write value to tag
+	req, _ = http.NewRequest("PUT", "/tag/storate.numeric.reg01", bytes.NewBuffer([]byte(`1.1`)))
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusNotFound, response.Code)
+
+	var m map[string]interface{}
+	json.Unmarshal(response.Body.Bytes(), &m)
+
+	if m["error"] != "read-only" {
+		t.Errorf("Expected result to be 'read-only'. Got '%v'", m["error"])
+	}
+
+	a.RW = true
 }
 
 // test delete TODO

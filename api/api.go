@@ -14,6 +14,7 @@ import (
 type App struct {
 	Conn   opc.OpcConnection
 	Router *mux.Router
+	RW     bool
 }
 
 // Initialize sets OPC connection and creates routes
@@ -77,23 +78,27 @@ func (a *App) deleteTag(w http.ResponseWriter, r *http.Request) {
 
 // updateTag write value the opc.Item for the given tag id, route: /tag/{id}
 func (a *App) updateTag(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+	if a.RW {
+		vars := mux.Vars(r)
 
-	var value interface{}
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&value); err != nil {
-		fmt.Println("value received:", value)
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-	defer r.Body.Close()
+		var value interface{}
+		decoder := json.NewDecoder(r.Body)
+		if err := decoder.Decode(&value); err != nil {
+			fmt.Println("value received:", value)
+			respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+			return
+		}
+		defer r.Body.Close()
 
-	err := a.Conn.Write(vars["id"], value)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "value could not be written to tag")
-		return
+		err := a.Conn.Write(vars["id"], value)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, "value could not be written to tag")
+			return
+		}
+		respondWithJSON(w, http.StatusOK, map[string]interface{}{"result": "updated"})
+	} else {
+		respondWithError(w, http.StatusNotFound, "read-only")
 	}
-	respondWithJSON(w, http.StatusOK, map[string]interface{}{"result": "updated"})
 }
 
 // responsWithError is a helper function to return a JSON error
