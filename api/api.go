@@ -14,7 +14,13 @@ import (
 type App struct {
 	Conn   opc.OpcConnection
 	Router *mux.Router
-	RW     bool
+	Config Config
+}
+
+type Config struct {
+	WriteTag  bool
+	AddTag    bool
+	DeleteTag bool
 }
 
 // Initialize sets OPC connection and creates routes
@@ -40,21 +46,25 @@ func (a *App) getTags(w http.ResponseWriter, r *http.Request) {
 
 // createTag creates the tags in the opc connection, route: /tag
 func (a *App) createTag(w http.ResponseWriter, r *http.Request) {
-	var tags []string
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&tags); err != nil {
-		fmt.Println("tags received:", tags)
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-	defer r.Body.Close()
+	if a.Config.AddTag {
+		var tags []string
+		decoder := json.NewDecoder(r.Body)
+		if err := decoder.Decode(&tags); err != nil {
+			fmt.Println("tags received:", tags)
+			respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+			return
+		}
+		defer r.Body.Close()
 
-	err := a.Conn.Add(tags...)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Did not add tags")
-		return
+		err := a.Conn.Add(tags...)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, "Did not add tags")
+			return
+		}
+		respondWithJSON(w, http.StatusCreated, map[string]interface{}{"result": "created"})
+	} else {
+		respondWithError(w, http.StatusBadRequest, "no additions allowed")
 	}
-	respondWithJSON(w, http.StatusCreated, map[string]interface{}{"result": "created"})
 }
 
 // getTag returns the opc.Item for the given tag id, route: /tag/{id}
@@ -71,14 +81,18 @@ func (a *App) getTag(w http.ResponseWriter, r *http.Request) {
 
 // deleteTag removes the tag in the opc connection
 func (a *App) deleteTag(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	a.Conn.Remove(vars["id"])
-	respondWithJSON(w, http.StatusOK, map[string]interface{}{"result": "removed"})
+	if a.Config.DeleteTag {
+		vars := mux.Vars(r)
+		a.Conn.Remove(vars["id"])
+		respondWithJSON(w, http.StatusOK, map[string]interface{}{"result": "removed"})
+	} else {
+		respondWithError(w, http.StatusBadRequest, "deletions not allowed")
+	}
 }
 
 // updateTag write value the opc.Item for the given tag id, route: /tag/{id}
 func (a *App) updateTag(w http.ResponseWriter, r *http.Request) {
-	if a.RW {
+	if a.Config.WriteTag {
 		vars := mux.Vars(r)
 
 		var value interface{}
@@ -97,7 +111,7 @@ func (a *App) updateTag(w http.ResponseWriter, r *http.Request) {
 		}
 		respondWithJSON(w, http.StatusOK, map[string]interface{}{"result": "updated"})
 	} else {
-		respondWithError(w, http.StatusNotFound, "read-only")
+		respondWithError(w, http.StatusBadRequest, "read-only")
 	}
 }
 

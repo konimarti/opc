@@ -16,7 +16,10 @@ import (
 var a api.App
 
 func TestMain(m *testing.M) {
-	a = api.App{}
+	var cfg api.Config
+	cfg.WriteTag = true
+	cfg.AddTag = true
+	cfg.DeleteTag = true
 
 	client := opc.NewConnection(
 		"Graybox.Simulator",
@@ -25,9 +28,8 @@ func TestMain(m *testing.M) {
 	)
 	defer client.Close()
 
-	a = api.App{}
+	a = api.App{Config: cfg}
 	a.Initialize(client)
-	a.RW = true //active read-write
 
 	// run "main"
 	code := m.Run()
@@ -167,7 +169,7 @@ func TestUpdateTag(t *testing.T) {
 
 // Test update with read only
 func TestUpdateTagReadOnly(t *testing.T) {
-	a.RW = false
+	a.Config.WriteTag = false
 
 	// preparation step
 	req, _ := http.NewRequest("POST", "/tag", bytes.NewBuffer([]byte("[\"storage.numeric.reg01\"]")))
@@ -177,7 +179,7 @@ func TestUpdateTagReadOnly(t *testing.T) {
 	req, _ = http.NewRequest("PUT", "/tag/storate.numeric.reg01", bytes.NewBuffer([]byte(`1.1`)))
 	response := executeRequest(req)
 
-	checkResponseCode(t, http.StatusNotFound, response.Code)
+	checkResponseCode(t, http.StatusBadRequest, response.Code)
 
 	var m map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &m)
@@ -186,9 +188,10 @@ func TestUpdateTagReadOnly(t *testing.T) {
 		t.Errorf("Expected result to be 'read-only'. Got '%v'", m["error"])
 	}
 
-	a.RW = true
+	a.Config.WriteTag = true
 }
 
+// test add TODO
 // test delete TODO
 
 // helper functions
