@@ -5,8 +5,6 @@ import (
 	"testing"
 )
 
-//var client opc.OpcConnection
-
 func TestNewConnectionNoTags(t *testing.T) {
 	client := NewConnection(
 		"Graybox.Simulator",

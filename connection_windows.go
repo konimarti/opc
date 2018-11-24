@@ -4,8 +4,8 @@ package opc
 
 import (
 	"errors"
+	"fmt"
 	"log"
-	"math/rand"
 	"sync"
 	"time"
 
@@ -14,20 +14,17 @@ import (
 )
 
 func init() {
-	rand.Seed(time.Now().UnixNano())
 	OleInit()
 }
 
 //OleInit initializes OLE.
 func OleInit() {
 	ole.CoInitializeEx(0, 0)
-	// log.Println("OLE initialized.")
 }
 
 //OleRealease realeses OLE resources in opcAutomation.
 func OleRelease() {
 	ole.CoUninitialize()
-	// log.Println("OLE released.")
 }
 
 //AutomationObject loads the OPC Automation Wrapper and handles to connection to the OPC Server.
@@ -117,14 +114,24 @@ func (ao *AutomationObject) Close() {
 }
 
 func NewAutomationObject() *AutomationObject {
-	unknown, err := oleutil.CreateObject("OPC.Automation.1")
+	wrappers := []string{"OPC.Automation.1", "Graybox.OPC.DAWrapper.1"}
+	var err error
+	var unknown *ole.IUnknown
+	for _, wrapper := range wrappers {
+		unknown, err = oleutil.CreateObject(wrapper)
+		if err == nil {
+			log.Println("Loaded OPC Automation object with wrapper", wrapper)
+			break
+		}
+		log.Println("Could not load OPC Automation object with wrapper", wrapper)
+	}
 	if err != nil {
-		log.Println("Could not load OPC Automation object")
 		return &AutomationObject{}
 	}
+
 	opc, err := unknown.QueryInterface(ole.IID_IDispatch)
 	if err != nil {
-		log.Println("Could not QueryInterface")
+		fmt.Println("Could not QueryInterface")
 		return &AutomationObject{}
 	}
 	object := AutomationObject{

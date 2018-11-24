@@ -5,15 +5,20 @@ Read process and automation data in Go from an OPC server for monitoring and dat
 
 ## Installation
 
-* Set ```$GOARCH``` based on your ```OPCDAAuto.dll``` in Powershell:
-  - If the ```OPCDAAuto.dll``` is in ```C:\Windows\System32```, use ```$ENV:GOARCH="amd64"```
-  - If the ```OPCDAAuto.dll``` is in ```C:\Windows\SysWOW64```, use ```$ENV:GOARCH="386"```
-* Note that this package currently only supports 386
+* Set ```$GOARCH``` based on your ```OPCDAAuto.dll``` or ```gbda_aut.dll``` in Powershell:
+  - If the wrapper is in ```C:\Windows\System32```, use ```$ENV:GOARCH="amd64"```
+  - If the wrapper is in ```C:\Windows\SysWOW64```, use ```$ENV:GOARCH="386"```
+* ```go get github.com/go-ole/go-ole```
 * ```go get github.com/konimarti/opc```
 
-## Prerequisites and Testing
+## Prerequisites
 
-* OPC DA Automation Wrapper 2.02 should be installed on your system (```ÒPCDAAuto.dll```); this DLL is usually shipped as part of the OPC Core Components of your OPC Server.
+* OPC DA Automation Wrapper 2.02 should be installed on your system (```ÒPCDAAuto.dll``` or ```gbda_aut.dll```); the automation wrapper is usually shipped as part of the OPC Core Components of your OPC Server.
+* You can get the Graybox DA Automation Wrapper [here](http://gray-box.net/download_daawrapper.php?lang=en).
+* Follow the [installation instruction](http://gray-box.net/daawrapper.php) for this wrapper. 
+
+## Testing
+
 * Start Graybox Simulator v1.8 (OPC Simulation Server; this is optional but necessary for testing); can be obtained for free [here](http://www.gray-box.net/download_graysim.php).
 * Test code with ```go test -v```
 
