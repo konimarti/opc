@@ -19,6 +19,7 @@ Read process and automation data in Go from an OPC server for monitoring and dat
 
 ## Testing
 
+* OPC DA Automation Wrapper 2.02 should be installed on your system (```OPCDAAuto.dll```); this DLL is usually shipped as part of the OPC Core Components of your OPC Server.
 * Start Graybox Simulator v1.8 (OPC Simulation Server; this is optional but necessary for testing); can be obtained for free [here](http://www.gray-box.net/download_graysim.php).
 * Test code with ```go test -v```
 
