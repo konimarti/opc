@@ -5,22 +5,20 @@ Read process and automation data in Go from an OPC server for monitoring and dat
 
 ## Installation
 
-* Set ```$GOARCH``` based on your ```OPCDAAuto.dll``` or ```gbda_aut.dll``` in Powershell:
-  - If the wrapper is in ```C:\Windows\System32```, use ```$ENV:GOARCH="amd64"```
-  - If the wrapper is in ```C:\Windows\SysWOW64```, use ```$ENV:GOARCH="386"```
-* ```go get github.com/go-ole/go-ole```
 * ```go get github.com/konimarti/opc```
 
-## Prerequisites
+## Prerequisites: OPC DA Automation Wrapper
 
-* OPC DA Automation Wrapper 2.02 should be installed on your system (```ÒPCDAAuto.dll``` or ```gbda_aut.dll```); the automation wrapper is usually shipped as part of the OPC Core Components of your OPC Server.
-* You can get the Graybox DA Automation Wrapper [here](http://gray-box.net/download_daawrapper.php?lang=en).
-* Follow the [installation instruction](http://gray-box.net/daawrapper.php) for this wrapper. 
+* OPC DA Automation Wrapper 2.02 should be installed on your system (```OPCDAAuto.dll``` or ```gbda_aut.dll```); the automation wrapper is usually shipped as part of the OPC Core Components of your OPC Server.
+* You can get the Graybox DA Automation Wrapper [here](http://gray-box.net/download_daawrapper.php?lang=en). Follow the [installation instruction](http://gray-box.net/daawrapper.php) for this wrapper. 
+* Depending on whether your OPC server and automation wrapper are 32-bit or 64-bit, set the Go architecture correspondingly:
+  - For 64-bit OPC servers and wrappers: DLL should be in ```C:\Windows\System32```, use ```$ENV:GOARCH="amd64"```
+  - For 32-bit OPC servers and wrappers: DLL should be in ```C:\Windows\SysWOW64```, use ```$ENV:GOARCH="386"```
 
 ## Testing
 
-* OPC DA Automation Wrapper 2.02 should be installed on your system (```OPCDAAuto.dll```); this DLL is usually shipped as part of the OPC Core Components of your OPC Server.
-* Start Graybox Simulator v1.8 (OPC Simulation Server; this is optional but necessary for testing); can be obtained for free [here](http://www.gray-box.net/download_graysim.php).
+* Start Graybox Simulator v1.8. This is a free OPC simulation server and require for testing this package. It can be downloaded [here](http://www.gray-box.net/download_graysim.php).
+* If you use the Graybox Simulator, set $GOARCH environment variable to "386", i.e. enter ```$ENV:GOARCH=386``` in Powershell.
 * Test code with ```go test -v```
 
 ## Example 
