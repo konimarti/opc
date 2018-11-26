@@ -1,4 +1,9 @@
 # OPC DA in Go
+
+[![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://github.com/konimarti/opc/blob/master/LICENSE)
+[![GoDoc](https://godoc.org/github.com/konimarti/observer?status.svg)](https://godoc.org/github.com/konimarti/opc)
+[![goreportcard](https://goreportcard.com/badge/github.com/konimarti/observer)](https://goreportcard.com/report/github.com/konimarti/opc)
+
 Read process and automation data in Go from an OPC server for monitoring and data analysis purposes (OPC DA protocol).
 
 ```go get github.com/konimarti/opc```
