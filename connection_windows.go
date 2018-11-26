@@ -88,7 +88,7 @@ func (ao *AutomationObject) TryConnect(server string, nodes []string) (*Automati
 		}
 		errResult = errResult + err.Error() + "\n"
 	}
-	return nil, errors.New("TryConnect was not successfull: " + errResult)
+	return nil, errors.New("TryConnect was not successful: " + errResult)
 }
 
 //IsConnected check if the server is properly connected and up and running.

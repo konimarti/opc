@@ -26,7 +26,7 @@ type Config struct {
 }
 
 // Initialize sets OPC connection and creates routes
-func (a *App) Initialize(conn opc.OpcConnection) {
+func (a *App) Initialize(conn opc.Connection) {
 	a.Conn = conn
 	a.Router = mux.NewRouter()
 	a.Router.HandleFunc("/tags", a.getTags).Methods("GET")          // Read

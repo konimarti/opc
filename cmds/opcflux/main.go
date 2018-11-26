@@ -22,13 +22,13 @@ var (
 	rr     = flag.String("rate", "10s", "refresh rate as duration, e.g. 100ms, 5s, 10s, 2m")
 )
 
-// contain measurement
+// M stores an InfluxDB measurement
 type M struct {
 	Tags   map[string]string
 	Fields map[string]string
 }
 
-// influx database
+// Database represents an InfluxDB database connection
 type Database struct {
 	Addr      string
 	Username  string
@@ -37,7 +37,7 @@ type Database struct {
 	Precision string
 }
 
-// contain high level structure for influx setup
+// Conf contains config data
 type Conf struct {
 	Server       string
 	Nodes        []string
@@ -72,7 +72,7 @@ func main() {
 			for _, f := range m.Fields {
 				expr, err := govaluate.NewEvaluableExpression(f)
 				if err != nil {
-					fmt.Println("Could not parse %s", f)
+					fmt.Println("Could not parse", f)
 					panic(err)
 				}
 				exprMap[f] = expr
@@ -111,15 +111,15 @@ func main() {
 		panic("Could not create OPC connection.")
 	}
 
-	time_C := make(chan time.Time, 10)
+	timeC := make(chan time.Time, 10)
 
 	// start go routine
-	go writeState(time_C, c, conn, conf, exprMap)
+	go writeState(timeC, c, conn, conf, exprMap)
 
 	// start ticker
 	ticker := time.NewTicker(refreshRate)
 	for tick := range ticker.C {
-		time_C <- tick
+		timeC <- tick
 	}
 }
 
@@ -144,14 +144,14 @@ func getConfig(config string) *Conf {
 }
 
 // writeState collects data and writes it to the influx database
-func writeState(time_C chan time.Time, c client.Client, conn opc.OpcConnection, conf *Conf, exprMap map[string]*govaluate.EvaluableExpression) {
+func writeState(timeC chan time.Time, c client.Client, conn opc.Connection, conf *Conf, exprMap map[string]*govaluate.EvaluableExpression) {
 
 	batchconfig := client.BatchPointsConfig{
 		Database:  conf.Influx.Database,
 		Precision: conf.Influx.Precision, // "s"
 	}
 
-	for t := range time_C {
+	for t := range timeC {
 
 		// read data
 		data := conn.Read()

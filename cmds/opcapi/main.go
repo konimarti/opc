@@ -1,7 +1,7 @@
+package main
+
 // To start opcapi in powershell
 // & {$ENV:OPC_SERVER="Graybox.Simulator"; $ENV:OPC_NODES="localhost";  go run main.go -addr ":8765"}
-
-package main
 
 import (
 	"flag"
@@ -30,7 +30,7 @@ func main() {
 	if len(nodes) == 0 {
 		panic("OPC_NODES not set; separate nodes with ','")
 	}
-	for i, _ := range nodes {
+	for i := range nodes {
 		nodes[i] = strings.Trim(nodes[i], " ")
 	}
 

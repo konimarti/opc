@@ -122,7 +122,7 @@ func TestOpcWrite(t *testing.T) {
 		// write new frequency to existing tag which should succeed
 		err = client.Write(cfg.Tag, cfg.Payload)
 		if err != nil {
-			t.Fatal("this test should not fail because new value should be writting to tag")
+			t.Fatal("this test should not fail because new value should be written to tag")
 		}
 
 		// read tag and check if value has been changed
