@@ -6,6 +6,12 @@ import (
 	"time"
 )
 
+//Collector interface
+type Collector interface {
+	Get(string) (interface{}, bool)
+	Sync(Connection, time.Duration) io.Closer
+}
+
 //data holds the data structure that is refreshed with OPC data.
 type data struct {
 	tags map[string]interface{}
@@ -21,7 +27,7 @@ func (d *data) Get(key string) (interface{}, bool) {
 }
 
 //update is a helper function to update map
-func (d *data) update(conn OpcConnection) {
+func (d *data) update(conn Connection) {
 	update := conn.Read()
 	d.mu.Lock()
 	for key, value := range update {
@@ -31,14 +37,14 @@ func (d *data) update(conn OpcConnection) {
 }
 
 //Sync synchronizes the opc server and stores the data into the data model.
-func (d *data) Sync(conn OpcConnection, refreshRate time.Duration) io.Closer {
+func (d *data) Sync(conn Connection, refreshRate time.Duration) io.Closer {
 
-        control := NewControl()
-        ticker := time.NewTicker(refreshRate)
-        
-        d.update(conn)
-	
-        go func() {
+	control := newControl()
+	ticker := time.NewTicker(refreshRate)
+
+	d.update(conn)
+
+	go func() {
 		for {
 			select {
 			case <-ticker.C:
@@ -55,8 +61,8 @@ func (d *data) Sync(conn OpcConnection, refreshRate time.Duration) io.Closer {
 }
 
 //NewDataModel returns an OPC Data struct.
-func NewDataModel() data {
-	return data{tags: make(map[string]interface{})}
+func NewDataModel() Collector {
+	return &data{tags: make(map[string]interface{})}
 }
 
 type control struct {
@@ -72,6 +78,6 @@ func (c *control) Close() error {
 	return nil
 }
 
-func NewControl() *control {
-        return &control{close: make(chan bool), done: make(chan bool)}
+func newControl() *control {
+	return &control{close: make(chan bool), done: make(chan bool)}
 }

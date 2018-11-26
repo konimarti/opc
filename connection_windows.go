@@ -22,7 +22,7 @@ func OleInit() {
 	ole.CoInitializeEx(0, 0)
 }
 
-//OleRealease realeses OLE resources in opcAutomation.
+//OleRelease realeses OLE resources in opcAutomation.
 func OleRelease() {
 	ole.CoUninitialize()
 }
@@ -57,17 +57,17 @@ func (ao *AutomationObject) Connect(server string, node string) (*AutomationItem
 	opcGroups, err := oleutil.GetProperty(ao.object, "OPCGroups")
 	if err != nil {
 		//log.Println(err)
-		return nil, errors.New("Cannot get OPCGroups property.")
+		return nil, errors.New("cannot get OPCGroups property")
 	}
 	opcGrp, err := oleutil.CallMethod(opcGroups.ToIDispatch(), "Add")
 	if err != nil {
 		// log.Println(err)
-		return nil, errors.New("Cannot add new OPC Group.")
+		return nil, errors.New("cannot add new OPC Group")
 	}
 	addItemObject, err := oleutil.GetProperty(opcGrp.ToIDispatch(), "OPCItems")
 	if err != nil {
 		// log.Println(err)
-		return nil, errors.New("Cannot get OPC Items.")
+		return nil, errors.New("cannot get OPC Items")
 	}
 
 	opcGroups.ToIDispatch().Release()
@@ -96,12 +96,12 @@ func (ao *AutomationObject) IsConnected() bool {
 	if ao.object == nil {
 		return false
 	}
-	state_vt, err := oleutil.GetProperty(ao.object, "ServerState")
+	stateVt, err := oleutil.GetProperty(ao.object, "ServerState")
 	if err != nil {
 		log.Println("GetProperty call for ServerState failed", err)
 		return false
 	}
-	if state_vt.Value().(int32) != OPCRunning {
+	if stateVt.Value().(int32) != oPCRunning {
 		return false
 	}
 	return true
@@ -113,6 +113,7 @@ func (ao *AutomationObject) Close() {
 	ao.unknown.Release()
 }
 
+//NewAutomationObject connects to the COM object based on available wrappers.
 func NewAutomationObject() *AutomationObject {
 	wrappers := []string{"OPC.Automation.1", "Graybox.OPC.DAWrapper.1"}
 	var err error
@@ -191,7 +192,7 @@ func (ai *AutomationItems) readFromOpc(opcitem *ole.IDispatch) (Item, error) {
 
 	//read tag from opc server and monitor duration in seconds
 	t := time.Now()
-	_, err := oleutil.CallMethod(opcitem, "Read", OPCCache, &v, &q, &ts)
+	_, err := oleutil.CallMethod(opcitem, "Read", oPCCache, &v, &q, &ts)
 	opcReadsDuration.Observe(time.Since(t).Seconds())
 
 	if err != nil {
@@ -234,7 +235,7 @@ func NewAutomationItems(opcitems *ole.IDispatch) *AutomationItems {
 	return &ai
 }
 
-//opcRealServer implements the OpcConnection interface.
+//opcRealServer implements the Connection interface.
 //It has the AutomationObject embedded for connecting to the server
 //and an AutomationItems to facilitate the OPC items bookkeeping.
 type opcConnectionImpl struct {
@@ -271,9 +272,8 @@ func (conn *opcConnectionImpl) Write(tag string, value interface{}) error {
 	opcitem, ok := conn.AutomationItems.items[tag]
 	if ok {
 		return conn.AutomationItems.writeToOpc(opcitem, value)
-	} else {
-		log.Printf("Tag %s not found. Add it first before writing to it.", tag)
 	}
+	log.Printf("Tag %s not found. Add it first before writing to it.", tag)
 	return errors.New("No Write performed")
 }
 
@@ -328,7 +328,7 @@ func (conn *opcConnectionImpl) Close() {
 }
 
 //NewConnection establishes a connection to the OpcServer object.
-func NewConnection(server string, nodes []string, tags []string) OpcConnection {
+func NewConnection(server string, nodes []string, tags []string) Connection {
 	object := NewAutomationObject()
 	items, err := object.TryConnect(server, nodes)
 	if err != nil {

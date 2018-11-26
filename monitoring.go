@@ -1,10 +1,11 @@
 package opc
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net/http"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
@@ -31,6 +32,7 @@ func init() {
 	prometheus.MustRegister(opcReadsDuration)
 }
 
+//StartMonitoring exposes /metrics to Prometheus
 func StartMonitoring(port string) {
 	var p string
 	if port == "" {

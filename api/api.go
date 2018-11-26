@@ -12,11 +12,13 @@ import (
 
 // App contains the opc connection and the API routes
 type App struct {
-	Conn   opc.OpcConnection
+	Conn   opc.Connection
 	Router *mux.Router
 	Config Config
 }
 
+//Config determines what services shall be exposed
+//through the App
 type Config struct {
 	WriteTag  bool
 	AddTag    bool
