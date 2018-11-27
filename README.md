@@ -28,7 +28,7 @@ Read process and automation data in Go from an OPC server for monitoring and dat
 
 ## Example 
 
-```
+```go
 package main
 
 import (
