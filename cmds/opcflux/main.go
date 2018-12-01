@@ -1,4 +1,4 @@
-//set OPC_SERVER=Graybox.Simulator && set OPC_NODES=127.0.0.1,localhost && go run main.go -config influx.yml -rate 100ms
+//set OPC_SERVER=Graybox.Simulator && set OPC_NODES=127.0.0.1,localhost && go run main.go -conf influx.yml -rate 100ms
 
 package main
 
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	config = flag.String("config", "influx.yml", "yaml config file for tag descriptions")
+	config = flag.String("conf", "influx.yml", "yaml config file for tag descriptions")
 	rr     = flag.String("rate", "10s", "refresh rate as duration, e.g. 100ms, 5s, 10s, 2m")
 )
 
