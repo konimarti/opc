@@ -8,11 +8,22 @@ Read process and automation data in Go from an OPC server for monitoring and dat
 
 ```go get github.com/konimarti/opc```
 
+## Usage
+```
+client := opc.NewConnection(
+	"Graybox.Simulator", 		// ProgId
+	[]string{"localhost"}, 		// Nodes
+	[]string{"numeric.sin.float"}, 	// Tags
+)
+defer client.Close()
+client.ReadItem("numeric.sin.float")
+```
+
 ## Installation
 
 * ```go get github.com/konimarti/opc```
 
-## Prerequisites: OPC DA Automation Wrapper
+### Prerequisites
 
 * OPC DA Automation Wrapper 2.02 should be installed on your system (```OPCDAAuto.dll``` or ```gbda_aut.dll```); the automation wrapper is usually shipped as part of the OPC Core Components of your OPC Server.
 * You can get the Graybox DA Automation Wrapper [here](http://gray-box.net/download_daawrapper.php?lang=en). Follow the [installation instruction](http://gray-box.net/daawrapper.php) for this wrapper. 
@@ -20,7 +31,7 @@ Read process and automation data in Go from an OPC server for monitoring and dat
   - For 64-bit OPC servers and wrappers: DLL should be in ```C:\Windows\System32```, use ```$ENV:GOARCH="amd64"```
   - For 32-bit OPC servers and wrappers: DLL should be in ```C:\Windows\SysWOW64```, use ```$ENV:GOARCH="386"```
 
-## Testing
+### Testing
 
 * Start Graybox Simulator v1.8. This is a free OPC simulation server and require for testing this package. It can be downloaded [here](http://www.gray-box.net/download_graysim.php).
 * If you use the Graybox Simulator, set $GOARCH environment variable to "386", i.e. enter ```$ENV:GOARCH=386``` in Powershell.
