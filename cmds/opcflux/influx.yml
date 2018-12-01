@@ -3,7 +3,8 @@ server: "Graybox.Simulator"
 nodes: ["localhost", "127.0.0.1"]
 monitoring: ""
 influx:
- addr: "http://localhost:8086"
+        #addr: "http://localhost:8086"
+ addr: "http://[2a0a:e5c0:2:12:400:f0ff:fea9:c3c5]:8086"
  database: test
  precision: s
 measurements: 

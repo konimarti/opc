@@ -59,12 +59,70 @@ with the following output:
 map[numeric.sin.int64:-34 numeric.saw.float:88.9]
 ```
 
+## OPCAPI
+
+* Application to expose OPC tags with a JSON REST API.
+
+  - Install the app: ```go install github.com/konimarti/opc/cmds/opcapi```
+
+  - Create config file:
+    ```
+    [config]
+    allow_write = false
+    allow_add = true
+    allow_remove = true
+  
+    [opc]
+    server = "Graybox.Simulator"
+    nodes = [ "localhost" ]
+    tags = [ "numeric.sin.float", "numeric.saw.float" ]
+  
+    ```
+
+  - Run app: ```opcapi.exe -conf api.conf -addr ":4444"```
+
+  - Access API:
+    - Get tags: 
+      ```curl.exe -X GET localhost:4444/tags```
+      Result: ```{"numeric.saw.float":-21.41,"numeric.sin.float":62.303356}```
+    - Add tag: ```curl.exe -X POST -d '["numeric.triangle.float"]' localhost:4444/tag```
+      Result: ```{"result": "created"}```
+    - Remove tag: ```curl.exe -X DELETE localhost:4444/tag/numeric.triangle.float```
+      Result: ```{"result": "removed"}```
+
 ## OPCFLUX
 
 * Application to write OPC data directly to InfluxDB.
 
-## OPCAPI
+  - Install the app: ```go install github.com/konimarti/opc/cmds/opcflux```
 
-* Application to expose OPC tags with a restful API.
+  - Create InfluxDB database "test"
 
+  - Create config file:
+    Put OPC tags in []. This is required for the expression evaluation. Any calculation can be performed that can evaluated.
+    ```
+    ---
+    server: "Graybox.Simulator"
+    nodes: ["localhost", "127.0.0.1"]
+    monitoring: ""
+    influx:
+     addr: "http://localhost:8086"
+     database: test
+     precision: s
+    measurements: 
+     numeric:
+       - tags: {type: sin}
+         fields: {float: "[numeric.sin.float]", int: "[numeric.sin.int32]"}
+       - tags: {type: saw}
+         fields: {float: "[numeric.saw.float]", int: "[numeric.saw.int32]"}
+       - tags: {type: calculation}
+         fields: {float: "[numeric.triangle.float] / [numeric.triangle.int32]"}
+     textual:
+       - tags: {type: color}
+         fields: {text: "[textual.color]", brown: "[textual.color] == 'Brown'"}        
+       - tags: {type: weekday}
+         fields: {text: "[textual.weekday]"}        
+    ```
+
+  - Run app: ```opcflux.exe -conf influx.yml -rate 1s```
 

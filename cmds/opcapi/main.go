@@ -18,7 +18,7 @@ import (
 
 var (
 	addr    = flag.String("addr", ":8765", "enter address to start api")
-	cfgFile = flag.String("config", "opcapi.conf", "config file name")
+	cfgFile = flag.String("conf", "opcapi.conf", "config file name")
 )
 
 type tmlConfig struct {
