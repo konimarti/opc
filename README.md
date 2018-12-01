@@ -84,10 +84,13 @@ map[numeric.sin.int64:-34 numeric.saw.float:88.9]
   - Access API:
     - Get tags: 
       ```curl.exe -X GET localhost:4444/tags```
+      
       Result: ```{"numeric.saw.float":-21.41,"numeric.sin.float":62.303356}```
     - Add tag: ```curl.exe -X POST -d '["numeric.triangle.float"]' localhost:4444/tag```
+    
       Result: ```{"result": "created"}```
     - Remove tag: ```curl.exe -X DELETE localhost:4444/tag/numeric.triangle.float```
+    
       Result: ```{"result": "removed"}```
 
 ## OPCFLUX
