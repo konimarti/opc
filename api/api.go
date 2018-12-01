@@ -20,9 +20,9 @@ type App struct {
 //Config determines what services shall be exposed
 //through the App
 type Config struct {
-	WriteTag  bool
-	AddTag    bool
-	DeleteTag bool
+	WriteTag  bool `toml:"allow_write"`
+	AddTag    bool `toml:"allow_add"`
+	DeleteTag bool `toml:"allow_remove"`
 }
 
 // Initialize sets OPC connection and creates routes
