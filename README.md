@@ -9,7 +9,7 @@ Read process and automation data in Go from an OPC server for monitoring and dat
 ```go get github.com/konimarti/opc```
 
 ## Usage
-```
+```go
 client := opc.NewConnection(
 	"Graybox.Simulator", 		// ProgId
 	[]string{"localhost"}, 		// Nodes
