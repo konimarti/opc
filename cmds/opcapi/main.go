@@ -23,10 +23,10 @@ var (
 
 type tmlConfig struct {
 	Config api.Config `toml:"config"`
-	Opc    OpcConfig  `toml:"opc"`
+	Opc    opcConfig  `toml:"opc"`
 }
 
-type OpcConfig struct {
+type opcConfig struct {
 	Server string `toml:"server"`
 	Nodes  []string
 	Tags   []string
