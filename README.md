@@ -148,3 +148,6 @@ map[numeric.sin.int64:-34 numeric.saw.float:88.9]
 
   - Run app: ```opcflux.exe -conf influx.yml -rate 1s```
 
+## Credits
+
+This software package has been developed for and is in production at [Kalkfabrik Netstal](http://www.kfn.ch/en).
