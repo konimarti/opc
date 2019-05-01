@@ -31,6 +31,10 @@ client.ReadItem("numeric.sin.float")
   - For 64-bit OPC servers and wrappers: DLL should be in ```C:\Windows\System32```, use ```$ENV:GOARCH="amd64"```
   - For 32-bit OPC servers and wrappers: DLL should be in ```C:\Windows\SysWOW64```, use ```$ENV:GOARCH="386"```
 
+### Debugging
+
+* Add ```opc.Debug()``` before the ```opc.NewConnection``` call to print more debug-related information.
+
 ### Testing
 
 * Start Graybox Simulator v1.8. This is a free OPC simulation server and require for testing this package. It can be downloaded [here](http://www.gray-box.net/download_graysim.php).
