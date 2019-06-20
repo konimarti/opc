@@ -5,6 +5,25 @@ import (
 	"testing"
 )
 
+func TestOPCBrowser(t *testing.T) {
+	browser, err := CreateBrowser(
+		"Graybox.Simulator",
+		[]string{"localhost"},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if browser.Name != "root" {
+		t.Fatal("structure of browser tree is compromised: root")
+	}
+	if browser.Branches[0].Name != "options" {
+		t.Fatal("structure of browser tree is compromised: options")
+	}
+	if len(browser.Branches[0].Leaves) != 4 {
+		t.Fatal("structure of browser tree is compromised: number of leaves for options")
+	}
+}
+
 func TestNewConnectionNoTags(t *testing.T) {
 	client := NewConnection(
 		"Graybox.Simulator",
