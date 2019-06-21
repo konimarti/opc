@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/influxdata/influxdb/client/v2"
-	"github.com/knetic/govaluate"
 	"github.com/konimarti/opc"
+	govaluate "gopkg.in/Knetic/govaluate.v3"
 	yaml "gopkg.in/yaml.v2"
 )
 
