@@ -83,7 +83,48 @@ with the following output:
 map[numeric.sin.int64:-34 numeric.saw.float:88.9]
 ```
 
-## OPCAPI
+## Applications 
+
+### Command-line interface: opc-cli
+
+* ```opc-cli``` is a command-line interface to work with OPC servers: list available OPC servers, browse OPC tags on server, and read/write OPC tags.
+* Install it with ```go install github.com/konimarti/opc/cmds/opc-cli```
+
+  - List OPC servers on a specific node: 
+    ```
+    $ opc-cli.exe list localhost
+
+	Found 3 server(s) on 'localhost':
+	Graybox.Simulator.1
+	INAT TcpIpH1 OPC Server
+	Prosys.OPC.Simulation
+    ```
+
+  - Browse OPC tags (in sub-branch):
+    ```
+    $ opc-cli.exe browse localhost Graybox.Simulator.1 textual
+
+	textual
+	   - textual.color
+	   - textual.number
+	   - textual.random
+	   - textual.weekday
+    ```
+
+  - Write to OPC tag:
+    ```
+    $ opc-cli.exe write localhost Graybox.Simulator.1 options.sinfreq 0.01
+    ```
+
+  - Read OPC tags:
+    ```
+    $ opc-cli.exe read localhost Graybox.Simulator.1 options.sinfreq numeric.sin.float
+
+	map[numeric.sin.float:21.096313 options.sinfreq:0.01]
+    ```
+
+
+### OPCAPI
 
 * Application to expose OPC tags with a JSON REST API.
 
@@ -125,7 +166,7 @@ map[numeric.sin.int64:-34 numeric.saw.float:88.9]
       {"result": "removed"}
       ```
 
-## OPCFLUX
+### OPCFLUX
 
 * Application to write OPC data directly to InfluxDB.
 
