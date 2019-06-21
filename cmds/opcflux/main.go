@@ -154,7 +154,7 @@ func writeState(timeC chan time.Time, c client.Client, conn opc.Connection, conf
 	for t := range timeC {
 
 		// read data
-		data := conn.Read()
+		data := conn.ReadValues()
 
 		// create a new point batch
 		bp, err := client.NewBatchPoints(batchconfig)

@@ -372,10 +372,10 @@ func (conn *opcConnectionImpl) Write(tag string, value interface{}) error {
 }
 
 //Read returns a map of the values of all added tags.
-func (conn *opcConnectionImpl) Read() map[string]interface{} {
+func (conn *opcConnectionImpl) Read() map[string]Item {
 	conn.mu.Lock()
 	defer conn.mu.Unlock()
-	allValues := map[string]interface{}{}
+	allTags := make(map[string]Item)
 	for tag, opcitem := range conn.AutomationItems.items {
 		item, err := conn.AutomationItems.readFromOpc(opcitem)
 		if err != nil {
@@ -383,6 +383,15 @@ func (conn *opcConnectionImpl) Read() map[string]interface{} {
 			conn.fix()
 			break
 		}
+		allTags[tag] = item
+	}
+	return allTags
+}
+
+//ReadValues returns a map of the values of all added tags.
+func (conn *opcConnectionImpl) ReadValues() map[string]interface{} {
+	allValues := make(map[string]interface{})
+	for tag, item := range conn.Read() {
 		allValues[tag] = item.Value
 	}
 	return allValues

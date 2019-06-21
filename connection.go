@@ -34,7 +34,8 @@ const (
 type Connection interface {
 	Add(...string) error
 	Remove(string)
-	Read() map[string]interface{}
+	Read() map[string]Item
+	ReadValues() map[string]interface{}
 	ReadItem(string) Item
 	Write(string, interface{}) error
 	Close()

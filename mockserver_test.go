@@ -18,6 +18,7 @@ type emptyServer struct{}
 func (es *emptyServer) Add(...string) error             { return nil }
 func (es *emptyServer) Remove(string)                   {}
 func (es *emptyServer) Write(string, interface{}) error { return nil }
+func (es *emptyServer) Read() map[string]Item           { return make(map[string]Item) }
 func (es *emptyServer) Close()                          {}
 
 //OpcMockServerStatic implements an OPC Server that returns the index value plus 1 for each tag.
@@ -27,11 +28,11 @@ type OpcMockServerStatic struct {
 }
 
 func (oms *OpcMockServerStatic) ReadItem(tag string) Item {
-	items := oms.Read()
+	items := oms.ReadValues()
 	return Item{Value: items[tag]}
 }
 
-func (oms *OpcMockServerStatic) Read() map[string]interface{} {
+func (oms *OpcMockServerStatic) ReadValues() map[string]interface{} {
 	answer := make(map[string]interface{})
 	for i, tag := range oms.Tags {
 		answer[tag] = float64(i) + 1.0
@@ -46,11 +47,11 @@ type OpcMockServerRandom struct {
 }
 
 func (oms *OpcMockServerRandom) ReadItem(tag string) Item {
-	items := oms.Read()
+	items := oms.ReadValues()
 	return Item{Value: items[tag]}
 }
 
-func (oms *OpcMockServerRandom) Read() map[string]interface{} {
+func (oms *OpcMockServerRandom) ReadValues() map[string]interface{} {
 	answer := make(map[string]interface{})
 	for _, tag := range oms.Tags {
 		answer[tag] = rand.Float64()
@@ -77,11 +78,11 @@ func (oms *OpcMockServerWakeUp) WakeUpAfter(sleep time.Duration) {
 }
 
 func (oms *OpcMockServerWakeUp) ReadItem(tag string) Item {
-	items := oms.Read()
+	items := oms.ReadValues()
 	return Item{Value: items[tag]}
 }
 
-func (oms *OpcMockServerWakeUp) Read() map[string]interface{} {
+func (oms *OpcMockServerWakeUp) ReadValues() map[string]interface{} {
 	answer := make(map[string]interface{})
 
 	oms.mu.Lock()
@@ -117,11 +118,11 @@ func (oms *OpcMockServerFallAsleep) FallAsleepAfter(sleep time.Duration) {
 }
 
 func (oms *OpcMockServerFallAsleep) ReadItem(tag string) Item {
-	items := oms.Read()
+	items := oms.ReadValues()
 	return Item{Value: items[tag]}
 }
 
-func (oms *OpcMockServerFallAsleep) Read() map[string]interface{} {
+func (oms *OpcMockServerFallAsleep) ReadValues() map[string]interface{} {
 	answer := make(map[string]interface{})
 
 	oms.mu.Lock()

@@ -85,9 +85,15 @@ func TestOpcRead(t *testing.T) {
 		t.Fatal("this test should have returned an empty item")
 	}
 
-	// read all added tags
+	// read all added tags (items)
 	m := client.Read()
 	if len(m) != 2 {
+		t.Fatal("the map should have only two items")
+	}
+
+	// read all added tags (values)
+	n := client.ReadValues()
+	if len(n) != 2 {
 		t.Fatal("the map should have only two items")
 	}
 }
