@@ -178,7 +178,7 @@ func (ao *AutomationObject) IsConnected() bool {
 		log.Println("GetProperty call for ServerState failed", err)
 		return false
 	}
-	if stateVt.Value().(int32) != oPCRunning {
+	if stateVt.Value().(int32) != OPCRunning {
 		return false
 	}
 	return true
@@ -286,7 +286,7 @@ func (ai *AutomationItems) readFromOpc(opcitem *ole.IDispatch) (Item, error) {
 
 	//read tag from opc server and monitor duration in seconds
 	t := time.Now()
-	_, err := oleutil.CallMethod(opcitem, "Read", oPCCache, &v, &q, &ts)
+	_, err := oleutil.CallMethod(opcitem, "Read", OPCCache, &v, &q, &ts)
 	opcReadsDuration.Observe(time.Since(t).Seconds())
 
 	if err != nil {
@@ -386,15 +386,6 @@ func (conn *opcConnectionImpl) Read() map[string]Item {
 		allTags[tag] = item
 	}
 	return allTags
-}
-
-//ReadValues returns a map of the values of all added tags.
-func (conn *opcConnectionImpl) ReadValues() map[string]interface{} {
-	allValues := make(map[string]interface{})
-	for tag, item := range conn.Read() {
-		allValues[tag] = item.Value
-	}
-	return allValues
 }
 
 //fix tries to reconnect if connection is lost by creating a new connection

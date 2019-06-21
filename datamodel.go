@@ -28,10 +28,10 @@ func (d *data) Get(key string) (interface{}, bool) {
 
 //update is a helper function to update map
 func (d *data) update(conn Connection) {
-	update := conn.ReadValues()
+	update := conn.Read()
 	d.mu.Lock()
-	for key, value := range update {
-		d.tags[key] = value
+	for key, item := range update {
+		d.tags[key] = item.Value
 	}
 	d.mu.Unlock()
 }

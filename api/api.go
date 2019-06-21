@@ -43,7 +43,7 @@ func (a *App) Run(addr string) {
 
 // getTags returns all tags in the current opc connection, route: /tags
 func (a *App) getTags(w http.ResponseWriter, r *http.Request) {
-	respondWithJSON(w, http.StatusOK, a.Conn.ReadValues())
+	respondWithJSON(w, http.StatusOK, a.Conn.Read())
 }
 
 // createTag creates the tags in the opc connection, route: /tag
