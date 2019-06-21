@@ -4,7 +4,7 @@
 [![GoDoc](https://godoc.org/github.com/konimarti/observer?status.svg)](https://godoc.org/github.com/konimarti/opc)
 [![goreportcard](https://goreportcard.com/badge/github.com/konimarti/observer)](https://goreportcard.com/report/github.com/konimarti/opc)
 
-Read process and automation data in Go from an OPC server for monitoring and data analysis purposes (OPC DA protocol).
+Read and write process and automation data in Go from an OPC server for monitoring and data analysis purposes (OPC DA protocol).
 
 ```go get github.com/konimarti/opc```
 
@@ -85,7 +85,7 @@ map[numeric.sin.int64:-34 numeric.saw.float:88.9]
 
 ## Applications 
 
-### Command-line interface: opc-cli
+### opc-cli
 
 * ```opc-cli``` is a command-line interface to work with OPC servers: list available OPC servers, browse OPC tags on server, and read/write OPC tags.
 * Install it with ```go install github.com/konimarti/opc/cmds/opc-cli```
@@ -93,7 +93,6 @@ map[numeric.sin.int64:-34 numeric.saw.float:88.9]
   - List OPC servers on a specific node: 
     ```
     $ opc-cli.exe list localhost
-
 	Found 3 server(s) on 'localhost':
 	Graybox.Simulator.1
 	INAT TcpIpH1 OPC Server
@@ -103,7 +102,6 @@ map[numeric.sin.int64:-34 numeric.saw.float:88.9]
   - Browse OPC tags (in sub-branch):
     ```
     $ opc-cli.exe browse localhost Graybox.Simulator.1 textual
-
 	textual
 	   - textual.color
 	   - textual.number
@@ -119,7 +117,6 @@ map[numeric.sin.int64:-34 numeric.saw.float:88.9]
   - Read OPC tags:
     ```
     $ opc-cli.exe read localhost Graybox.Simulator.1 options.sinfreq numeric.sin.float
-
 	map[numeric.sin.float:21.096313 options.sinfreq:0.01]
     ```
 
