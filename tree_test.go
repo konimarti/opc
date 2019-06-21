@@ -12,8 +12,8 @@ func testingCreateNewTree() *Tree {
 		Branches: []*Tree{},
 		Leaves: []Leaf{
 			Leaf{
-				Name: "bandwith",
-				Tag:  "bandwith",
+				Name: "bandwidth",
+				Tag:  "bandwidth",
 			},
 		},
 	}
