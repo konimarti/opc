@@ -35,7 +35,7 @@ func TestOPCDataSync(t *testing.T) {
 			t.Fatal("tag3 does not match")
 		}
 
-		value, ok = odata.Get("tag4")
+		_, ok = odata.Get("tag4")
 		if ok {
 			t.Fatal("tag4 should not be found")
 		}
