@@ -85,10 +85,21 @@ func TestOpcRead(t *testing.T) {
 		t.Fatal("this test should have returned an empty item")
 	}
 
-	// read all added tags
+	// read all added tags (items)
 	m := client.Read()
 	if len(m) != 2 {
 		t.Fatal("the map should have only two items")
+	}
+
+	// check Good() of Item
+	if item.Quality == OPCQualityGood {
+		if item.Good() != true {
+			t.Fatal("failed to check quality of item")
+		}
+	} else {
+		if item.Good() == true {
+			t.Fatal("failed to check quality of item")
+		}
 	}
 }
 

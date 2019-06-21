@@ -5,36 +5,43 @@ import (
 )
 
 const (
-	//OPCDataSource defines constants for Sources when reading data from OPC.
+	//OPCDataSource defines constants for Sources when reading data from OPC:
 	//Default implementation is OPCCache.
-	oPCCache  int32 = 1
-	oPCDevice int32 = 2
+	//From the cache
+	OPCCache int32 = 1
+	//From the device
+	OPCDevice int32 = 2
 
-	//OPCQuality defines constants for OPCItems that were read.
-	oPCQualityBad       int16 = 0
-	oPCQualityGood      int16 = 192
-	oPCQualityMask      int16 = 192
-	oPCQualityUncertain int16 = 64
+	//OPCQuality defines the quality of the OPC items:
+	//Bad
+	OPCQualityBad int16 = 0
+	//Good
+	OPCQualityGood int16 = 192
+	//Maks
+	OPCQualityMask int16 = 192
+	//Uncertain
+	OPCQualityUncertain int16 = 64
 
-	//OPCServerState defines the state of the server.
-	oPCDisconnected int32 = 6
-	oPCFailed       int32 = 2
-	oPCNoconfig     int32 = 3
-	oPCRunning      int32 = 1
-	oPCSuspended    int32 = 4
-	oPCTest         int32 = 5
-
-	//OPCErrors defines errors when reading OPCItems.
-	oPCBadRights = -1073479674
-	oPCBadType   = -1073479676
-	//..
+	//OPCServerState defines the state of the server:
+	//Disconnected
+	OPCDisconnected int32 = 6
+	//Failed
+	OPCFailed int32 = 2
+	//Noconfig
+	OPCNoconfig int32 = 3
+	//Running
+	OPCRunning int32 = 1
+	//Suspended
+	OPCSuspended int32 = 4
+	//Test
+	OPCTest int32 = 5
 )
 
 //Connection represents the interface for the connection to the OPC server.
 type Connection interface {
 	Add(...string) error
 	Remove(string)
-	Read() map[string]interface{}
+	Read() map[string]Item
 	ReadItem(string) Item
 	Write(string, interface{}) error
 	Close()
@@ -45,4 +52,12 @@ type Item struct {
 	Value     interface{}
 	Quality   int16
 	Timestamp time.Time
+}
+
+//Good checks the quality of the Item
+func (i *Item) Good() bool {
+	if i.Quality == OPCQualityGood {
+		return true
+	}
+	return false
 }

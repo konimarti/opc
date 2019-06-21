@@ -79,8 +79,9 @@ func main() {
 with the following output:
 
 ```
-{-34 192 2018-11-21 20:59:10 +0000 UTC}
-map[numeric.sin.int64:-34 numeric.saw.float:88.9]
+{91 192 2019-06-21 15:23:08 +0000 UTC}
+map[numeric.sin.int64:{91 192 2019-06-21 15:23:08 +0000 UTC} numeric.saw.float:{-36.42 192 2019-06-21 15:23:08 +0000 UTC
+}]
 ```
 
 ## Applications 
@@ -117,7 +118,7 @@ map[numeric.sin.int64:-34 numeric.saw.float:88.9]
   - Read OPC tags:
     ```
     $ opc-cli.exe read localhost Graybox.Simulator.1 options.sinfreq numeric.sin.float
-	map[numeric.sin.float:21.096313 options.sinfreq:0.01]
+	map[options.sinfreq:{0.05 192 2019-06-21 15:26:02 +0000 UTC} numeric.sin.float:{22.916641 192 2019-06-21 15:26:02 +0000 UTC}]
     ```
 
 

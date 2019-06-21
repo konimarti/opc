@@ -154,7 +154,7 @@ func writeState(timeC chan time.Time, c client.Client, conn opc.Connection, conf
 	for t := range timeC {
 
 		// read data
-		data := conn.Read()
+		data := adapter(conn.Read())
 
 		// create a new point batch
 		bp, err := client.NewBatchPoints(batchconfig)
@@ -196,4 +196,12 @@ func writeState(timeC chan time.Time, c client.Client, conn opc.Connection, conf
 			fmt.Println(err)
 		}
 	}
+}
+
+func adapter(input map[string]opc.Item) map[string]interface{} {
+	output := make(map[string]interface{})
+	for key, item := range input {
+		output[key] = item.Value
+	}
+	return output
 }

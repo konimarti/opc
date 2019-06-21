@@ -28,18 +28,18 @@ type OpcMockServerStatic struct {
 
 func (oms *OpcMockServerStatic) ReadItem(tag string) Item {
 	items := oms.Read()
-	return Item{Value: items[tag]}
+	return items[tag]
 }
 
-func (oms *OpcMockServerStatic) Read() map[string]interface{} {
-	answer := make(map[string]interface{})
+func (oms *OpcMockServerStatic) Read() map[string]Item {
+	answer := make(map[string]Item)
 	for i, tag := range oms.Tags {
-		answer[tag] = float64(i) + 1.0
+		answer[tag] = Item{float64(i) + 1.0, OPCQualityGood, time.Now()}
 	}
 	return answer
 }
 
-//OpcMockServerRandom implements an OPC Server that returns the a random value for each tag.
+//OpcMockServerRandom implements an OPC Server that returns a random value for each tag.
 type OpcMockServerRandom struct {
 	*emptyServer
 	Tags []string
@@ -47,13 +47,13 @@ type OpcMockServerRandom struct {
 
 func (oms *OpcMockServerRandom) ReadItem(tag string) Item {
 	items := oms.Read()
-	return Item{Value: items[tag]}
+	return items[tag]
 }
 
-func (oms *OpcMockServerRandom) Read() map[string]interface{} {
-	answer := make(map[string]interface{})
+func (oms *OpcMockServerRandom) Read() map[string]Item {
+	answer := make(map[string]Item)
 	for _, tag := range oms.Tags {
-		answer[tag] = rand.Float64()
+		answer[tag] = Item{rand.Float64(), OPCQualityGood, time.Now()}
 	}
 	return answer
 }
@@ -78,20 +78,20 @@ func (oms *OpcMockServerWakeUp) WakeUpAfter(sleep time.Duration) {
 
 func (oms *OpcMockServerWakeUp) ReadItem(tag string) Item {
 	items := oms.Read()
-	return Item{Value: items[tag]}
+	return items[tag]
 }
 
-func (oms *OpcMockServerWakeUp) Read() map[string]interface{} {
-	answer := make(map[string]interface{})
+func (oms *OpcMockServerWakeUp) Read() map[string]Item {
+	answer := make(map[string]Item)
 
 	oms.mu.Lock()
 	defer oms.mu.Unlock()
 
 	for _, tag := range oms.Tags {
 		if oms.AtSleep {
-			answer[tag] = 1.0
+			answer[tag] = Item{1.0, OPCQualityGood, time.Now()}
 		} else {
-			answer[tag] = rand.Float64()
+			answer[tag] = Item{rand.Float64(), OPCQualityGood, time.Now()}
 		}
 	}
 
@@ -118,20 +118,20 @@ func (oms *OpcMockServerFallAsleep) FallAsleepAfter(sleep time.Duration) {
 
 func (oms *OpcMockServerFallAsleep) ReadItem(tag string) Item {
 	items := oms.Read()
-	return Item{Value: items[tag]}
+	return items[tag]
 }
 
-func (oms *OpcMockServerFallAsleep) Read() map[string]interface{} {
-	answer := make(map[string]interface{})
+func (oms *OpcMockServerFallAsleep) Read() map[string]Item {
+	answer := make(map[string]Item)
 
 	oms.mu.Lock()
 	defer oms.mu.Unlock()
 
 	for _, tag := range oms.Tags {
 		if oms.AtSleep {
-			answer[tag] = 2.0
+			answer[tag] = Item{2.0, OPCQualityGood, time.Now()}
 		} else {
-			answer[tag] = rand.Float64()
+			answer[tag] = Item{rand.Float64(), OPCQualityGood, time.Now()}
 		}
 	}
 
