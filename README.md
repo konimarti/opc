@@ -19,6 +19,15 @@ defer client.Close()
 client.ReadItem("numeric.sin.float")
 ```
 
+```go
+browser, _ := opc.CreateBrowser(
+	"Graybox.Simulator", 		// ProgId
+	[]string{"localhost"}, 		// Nodes	
+)
+opc.PrettyPrint(browser)
+```
+
+
 ## Installation
 
 * ```go get github.com/konimarti/opc```
