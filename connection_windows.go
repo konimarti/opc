@@ -86,7 +86,7 @@ func (ao *AutomationObject) TryConnect(server string, nodes []string) (*Automati
 		if err == nil {
 			return items, err
 		}
-		errResult = errResult + err.Error() + "\n"
+		errResult = errResult + err.Error() + ". "
 	}
 	return nil, errors.New("TryConnect was not successful: " + errResult)
 }
@@ -247,6 +247,22 @@ type opcConnectionImpl struct {
 	mu     sync.Mutex
 }
 
+func (conn *opcConnectionImpl) AddInConn(tags ...string) error {
+	var errResult string
+	for _, tag := range tags {
+		err := conn.addSingle(tag)
+		if err != nil {
+			errResult = err.Error() + errResult
+		}
+
+		conn.Tags = append(conn.Tags, tag)
+	}
+	if errResult == "" {
+		return nil
+	}
+	return errors.New(errResult)
+}
+
 //ReadItem returns an Item for a specific tag.
 func (conn *opcConnectionImpl) ReadItem(tag string) Item {
 	conn.mu.Lock()
@@ -346,15 +362,15 @@ func (conn *opcConnectionImpl) Close() {
 }
 
 //NewConnection establishes a connection to the OpcServer object.
-func NewConnection(server string, nodes []string, tags []string) Connection {
+func NewConnection(server string, nodes []string, tags []string) (Connection, error) {
 	object := NewAutomationObject()
 	items, err := object.TryConnect(server, nodes)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	err = items.Add(tags...)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	conn := opcConnectionImpl{
 		AutomationObject: object,
@@ -364,5 +380,5 @@ func NewConnection(server string, nodes []string, tags []string) Connection {
 		Tags:             tags,
 	}
 
-	return &conn
+	return &conn, nil
 }
