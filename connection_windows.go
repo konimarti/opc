@@ -277,6 +277,24 @@ func (conn *opcConnectionImpl) Write(tag string, value interface{}) error {
 	return errors.New("No Write performed")
 }
 
+//Read returns a map of the values, quality and timestamp of all added tags.
+func (conn *opcConnectionImpl) ReadAll() []Item {
+	conn.mu.Lock()
+	defer conn.mu.Unlock()
+	items := []Item{}
+	for tag, opcitem := range conn.AutomationItems.items {
+		item, err := conn.AutomationItems.readFromOpc(opcitem)
+		if err != nil {
+			log.Printf("Cannot read %s: %s. Trying to fix.", tag, err)
+			conn.fix()
+			continue
+		}
+
+		items = append(items, item)
+	}
+	return items
+}
+
 //Read returns a map of the values of all added tags.
 func (conn *opcConnectionImpl) Read() map[string]interface{} {
 	conn.mu.Lock()
