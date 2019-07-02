@@ -8,6 +8,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var Debug bool
+
+func CheckDebug() {
+	if Debug {
+		opc.Debug()
+	}
+}
+
 func main() {
 
 	var cmdList = &cobra.Command{
@@ -17,6 +25,7 @@ func main() {
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			node := args[0]
+			CheckDebug()
 			servers_found := opc.NewAutomationObject().GetOPCServers(node)
 			fmt.Printf("Found %d server(s) on '%s':\n", len(servers_found), node)
 			for _, server := range servers_found {
@@ -33,6 +42,7 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			nodes := []string{args[0]}
 			server := args[1]
+			CheckDebug()
 			obj := opc.NewAutomationObject()
 			_, err := obj.TryConnect(server, nodes)
 			if err != nil {
@@ -57,6 +67,7 @@ func main() {
 			nodes := []string{args[0]}
 			server := args[1]
 			name := "root"
+			CheckDebug()
 			if len(args) > 2 {
 				name = args[2]
 			}
@@ -78,6 +89,7 @@ func main() {
 			nodes := []string{args[0]}
 			server := args[1]
 			tags := args[2:]
+			CheckDebug()
 			conn := opc.NewConnection(
 				server,
 				nodes,
@@ -97,6 +109,7 @@ func main() {
 			server := args[1]
 			tag := args[2]
 			value := args[3]
+			CheckDebug()
 			conn := opc.NewConnection(
 				server,
 				nodes,
@@ -107,6 +120,8 @@ func main() {
 	}
 
 	var rootCmd = &cobra.Command{Use: "opc-cli"}
+
+	rootCmd.PersistentFlags().BoolVarP(&Debug, "debug", "d", false, "set OPC logging")
 
 	rootCmd.AddCommand(cmdList, cmdInfo, cmdBrowse, cmdRead, cmdWrite)
 	rootCmd.Execute()
