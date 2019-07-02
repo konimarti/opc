@@ -69,12 +69,16 @@ func main() {
 
 	fmt.Println("API starting with OPC", server, nodes, *addr)
 
-	client := opc.NewConnection(
+	client, err := opc.NewConnection(
 		server,
 		nodes,
 		cfg.Opc.Tags,
 	)
 	defer client.Close()
+
+	if err != nil {
+		panic(err)
+	}
 
 	app := api.App{Config: cfg.Config}
 	app.Initialize(client)

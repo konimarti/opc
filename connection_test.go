@@ -25,7 +25,7 @@ func TestOPCBrowser(t *testing.T) {
 }
 
 func TestNewConnectionNoTags(t *testing.T) {
-	client := NewConnection(
+	client, _ := NewConnection(
 		"Graybox.Simulator",
 		[]string{"localhost"},
 		[]string{},
@@ -34,7 +34,7 @@ func TestNewConnectionNoTags(t *testing.T) {
 }
 
 func TestNewConnectionWithTags(t *testing.T) {
-	client := NewConnection(
+	client,_ := NewConnection(
 		"Graybox.Simulator",
 		[]string{"localhost"},
 		[]string{"numeric.sin.int64", "numeric.saw.float"},
@@ -42,8 +42,37 @@ func TestNewConnectionWithTags(t *testing.T) {
 	client.Close()
 }
 
+func TestNewConnectionWrongServer(t *testing.T) {
+	client, err := NewConnection(
+		"Graybox.Simulator.NOTREAL",
+		[]string{"localhost"},
+		[]string{},
+	)
+	client.Close()
+
+	if err == nil {
+		t.Fatal("this test should return an error because server does not exist")
+	}
+
+}
+
+func TestNewConnectionWrongNode(t *testing.T) {
+	client, err := NewConnection(
+		"Graybox.Simulator",
+		[]string{"localhost.NOTREAL"},
+		[]string{},
+	)
+	client.Close()
+
+	if err == nil {
+		t.Fatal("this test should return an error because node does not exist")
+	}
+
+}
+
+
 func TestAddTags(t *testing.T) {
-	client := NewConnection(
+	client, _ := NewConnection(
 		"Graybox.Simulator",
 		[]string{"localhost"},
 		[]string{},
@@ -53,7 +82,7 @@ func TestAddTags(t *testing.T) {
 }
 
 func TestRemoveTags(t *testing.T) {
-	client := NewConnection(
+	client, _ := NewConnection(
 		"Graybox.Simulator",
 		[]string{"localhost"},
 		[]string{"numeric.sin.int64", "numeric.saw.float"},
@@ -64,7 +93,7 @@ func TestRemoveTags(t *testing.T) {
 }
 
 func TestOpcRead(t *testing.T) {
-	client := NewConnection(
+	client, _ := NewConnection(
 		"Graybox.Simulator",
 		[]string{"localhost"},
 		[]string{"numeric.sin.int64", "numeric.saw.float"},
@@ -104,7 +133,7 @@ func TestOpcRead(t *testing.T) {
 }
 
 func TestOpcWrite(t *testing.T) {
-	client := NewConnection(
+	client, _ := NewConnection(
 		"Graybox.Simulator",
 		[]string{"localhost"},
 		[]string{"numeric.sin.int64", "numeric.saw.float"},

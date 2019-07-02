@@ -21,7 +21,7 @@ func TestMain(m *testing.M) {
 	cfg.AddTag = true
 	cfg.DeleteTag = true
 
-	client := opc.NewConnection(
+	client,_ := opc.NewConnection(
 		"Graybox.Simulator",
 		[]string{"localhost"},
 		[]string{},
