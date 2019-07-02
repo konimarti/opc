@@ -102,13 +102,14 @@ func main() {
 		conf.Nodes = strings.Split(os.Getenv("OPC_NODES"), ",")
 	}
 
-	conn := opc.NewConnection(
+	conn, err := opc.NewConnection(
 		conf.Server,
 		conf.Nodes,
 		tags,
 	)
-	if conn == nil {
-		panic("Could not create OPC connection.")
+	if err != nil {
+		fmt.Println("Could not create OPC connection.")
+		panic(err)
 	}
 
 	timeC := make(chan time.Time, 10)

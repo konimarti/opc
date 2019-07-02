@@ -90,11 +90,15 @@ func main() {
 			server := args[1]
 			tags := args[2:]
 			CheckDebug()
-			conn := opc.NewConnection(
+			conn, err := opc.NewConnection(
 				server,
 				nodes,
 				tags,
 			)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
 			fmt.Println(conn.Read())
 		},
 	}
@@ -110,11 +114,15 @@ func main() {
 			tag := args[2]
 			value := args[3]
 			CheckDebug()
-			conn := opc.NewConnection(
+			conn, err := opc.NewConnection(
 				server,
 				nodes,
 				[]string{tag},
 			)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
 			conn.Write(tag, value)
 		},
 	}

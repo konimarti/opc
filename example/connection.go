@@ -7,12 +7,16 @@ import (
 )
 
 func main() {
-	client := opc.NewConnection(
+	client, err := opc.NewConnection(
 		"Graybox.Simulator",
 		[]string{"localhost"},
 		[]string{"numeric.sin.int64", "numeric.saw.float"},
 	)
 	defer client.Close()
+
+	if err != nil {
+		panic(err)
+	}
 
 	// read single tag: value, quality, timestamp
 	fmt.Println(client.ReadItem("numeric.sin.int64"))

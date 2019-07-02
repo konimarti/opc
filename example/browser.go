@@ -23,7 +23,7 @@ func main() {
 	opc.PrettyPrint(subtree)
 
 	// create opc connection with all tags from subtree
-	conn := opc.NewConnection(
+	conn, _ := opc.NewConnection(
 		progid,
 		nodes,
 		opc.CollectTags(subtree),

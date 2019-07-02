@@ -422,15 +422,15 @@ func (conn *opcConnectionImpl) Close() {
 }
 
 //NewConnection establishes a connection to the OpcServer object.
-func NewConnection(server string, nodes []string, tags []string) Connection {
+func NewConnection(server string, nodes []string, tags []string) (Connection, error) {
 	object := NewAutomationObject()
 	items, err := object.TryConnect(server, nodes)
 	if err != nil {
-		panic(err)
+		return &opcConnectionImpl{}, err
 	}
 	err = items.Add(tags...)
 	if err != nil {
-		panic(err)
+		return &opcConnectionImpl{}, err
 	}
 	conn := opcConnectionImpl{
 		AutomationObject: object,
@@ -440,7 +440,7 @@ func NewConnection(server string, nodes []string, tags []string) Connection {
 		Tags:             tags,
 	}
 
-	return &conn
+	return &conn, nil
 }
 
 //CreateBrowser creates an opc browser representation

@@ -10,7 +10,7 @@ Read and write process and automation data in Go from an OPC server for monitori
 
 ## Usage
 ```go
-client := opc.NewConnection(
+client, _ := opc.NewConnection(
 	"Graybox.Simulator", 		// ProgId
 	[]string{"localhost"}, 		// Nodes
 	[]string{"numeric.sin.float"}, 	// Tags
@@ -61,7 +61,7 @@ import (
 )
 
 func main() {
-	client := opc.NewConnection(
+	client, _ := opc.NewConnection(
 		"Graybox.Simulator", // ProgId
 		[]string{"localhost"}, //  OPC servers nodes
 		[]string{"numeric.sin.int64", "numeric.saw.float"}, // slice of OPC tags
