@@ -32,13 +32,14 @@ opc.PrettyPrint(browser)
 
 * ```go get github.com/konimarti/opc```
 
-### Prerequisites
+### Troubleshooting
 
 * OPC DA Automation Wrapper 2.02 should be installed on your system (```OPCDAAuto.dll``` or ```gbda_aut.dll```); the automation wrapper is usually shipped as part of the OPC Core Components of your OPC Server.
 * You can get the Graybox DA Automation Wrapper [here](http://gray-box.net/download_daawrapper.php?lang=en). Follow the [installation instruction](http://gray-box.net/daawrapper.php) for this wrapper. 
 * Depending on whether your OPC server and automation wrapper are 32-bit or 64-bit, set the Go architecture correspondingly:
   - For 64-bit OPC servers and wrappers: DLL should be in ```C:\Windows\System32```, use ```$ENV:GOARCH="amd64"```
   - For 32-bit OPC servers and wrappers: DLL should be in ```C:\Windows\SysWOW64```, use ```$ENV:GOARCH="386"```
+* Make sure to have correct DCOM settings on your local and remote computers: ```Dcomcnfg.exe```
 
 ### Debugging
 
