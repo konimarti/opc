@@ -203,8 +203,12 @@ func (ao *AutomationObject) GetOPCServers(node string) []string {
 
 //Close releases the OLE objects in the AutomationObject.
 func (ao *AutomationObject) Close() {
-	ao.object.Release()
-	ao.unknown.Release()
+	if ao.object != nil {
+		ao.object.Release()
+	}
+	if ao.unknown != nil {
+		ao.unknown.Release()
+	}
 }
 
 //NewAutomationObject connects to the COM object based on available wrappers.
@@ -417,7 +421,7 @@ func (conn *opcConnectionImpl) Close() {
 		conn.AutomationObject.Close()
 	}
 	if conn.AutomationItems != nil {
-		conn.AutomationObject.Close()
+		conn.AutomationItems.Close()
 	}
 }
 
