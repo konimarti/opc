@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/konimarti/opc"
 )
@@ -38,7 +39,7 @@ func (a *App) Initialize(conn opc.Connection) {
 
 // Run starts serving the API
 func (a *App) Run(addr string) {
-	log.Fatal(http.ListenAndServe(addr, a.Router))
+	log.Fatal(http.ListenAndServe(addr, handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(a.Router)))
 }
 
 // getTags returns all tags in the current opc connection, route: /tags
