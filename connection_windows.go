@@ -341,7 +341,6 @@ type opcConnectionImpl struct {
 	*AutomationItems
 	Server string
 	Nodes  []string
-	Tags   []string
 	mu     sync.Mutex
 }
 
@@ -392,12 +391,22 @@ func (conn *opcConnectionImpl) Read() map[string]Item {
 	return allTags
 }
 
+//Tags returns the currently active tags
+func (conn *opcConnectionImpl) Tags() []string {
+	var tags []string
+	for tag, _ := range conn.AutomationItems.items {
+		tags = append(tags, tag)
+	}
+	return tags
+}
+
 //fix tries to reconnect if connection is lost by creating a new connection
 //with AutomationObject and creating a new AutomationItems instance.
 func (conn *opcConnectionImpl) fix() {
 	var err error
 	if !conn.IsConnected() {
 		for {
+			tags := conn.Tags()
 			conn.AutomationItems.Close()
 			conn.AutomationItems, err = conn.TryConnect(conn.Server, conn.Nodes)
 			if err != nil {
@@ -405,8 +414,8 @@ func (conn *opcConnectionImpl) fix() {
 				time.Sleep(100 * time.Millisecond)
 				continue
 			}
-			if conn.Add(conn.Tags...) == nil {
-				log.Printf("Added %d tags", len(conn.Tags))
+			if conn.Add(tags...) == nil {
+				log.Printf("Added %d tags", len(tags))
 			}
 			break
 		}
@@ -441,7 +450,6 @@ func NewConnection(server string, nodes []string, tags []string) (Connection, er
 		AutomationItems:  items,
 		Server:           server,
 		Nodes:            nodes,
-		Tags:             tags,
 	}
 
 	return &conn, nil

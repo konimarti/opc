@@ -10,7 +10,7 @@ import (
 
 func TestOPCDataSync(t *testing.T) {
 	odata := NewDataModel()
-	running := odata.Sync(&OpcMockServerStatic{Tags: []string{"tag1", "tag2", "tag3"}}, 50*time.Millisecond)
+	running := odata.Sync(&OpcMockServerStatic{TagList: []string{"tag1", "tag2", "tag3"}}, 50*time.Millisecond)
 	defer running.Close()
 
 	time.Sleep(200 * time.Millisecond)
@@ -46,7 +46,7 @@ func TestOPCDataSync(t *testing.T) {
 
 func TestOPCDataStop(t *testing.T) {
 	odata := NewDataModel()
-	running := odata.Sync(&OpcMockServerRandom{Tags: []string{"tag1"}}, 50*time.Millisecond)
+	running := odata.Sync(&OpcMockServerRandom{TagList: []string{"tag1"}}, 50*time.Millisecond)
 
 	time.Sleep(200 * time.Millisecond)
 
@@ -81,7 +81,7 @@ func TestOPCDataStopAfterRecord(t *testing.T) {
 
 	go func() {
 		odata := NewDataModel()
-		running := odata.Sync(&OpcMockServerRandom{Tags: []string{"tag1", "tag2", "tag3"}}, 50*time.Millisecond)
+		running := odata.Sync(&OpcMockServerRandom{TagList: []string{"tag1", "tag2", "tag3"}}, 50*time.Millisecond)
 		running.Close()
 		c <- true
 	}()

@@ -19,11 +19,12 @@ func (es *emptyServer) Add(...string) error             { return nil }
 func (es *emptyServer) Remove(string)                   {}
 func (es *emptyServer) Write(string, interface{}) error { return nil }
 func (es *emptyServer) Close()                          {}
+func (es *emptyServer) Tags() []string                  { return []string{} }
 
 //OpcMockServerStatic implements an OPC Server that returns the index value plus 1 for each tag.
 type OpcMockServerStatic struct {
 	*emptyServer
-	Tags []string
+	TagList []string
 }
 
 func (oms *OpcMockServerStatic) ReadItem(tag string) Item {
@@ -33,7 +34,7 @@ func (oms *OpcMockServerStatic) ReadItem(tag string) Item {
 
 func (oms *OpcMockServerStatic) Read() map[string]Item {
 	answer := make(map[string]Item)
-	for i, tag := range oms.Tags {
+	for i, tag := range oms.TagList {
 		answer[tag] = Item{float64(i) + 1.0, OPCQualityGood, time.Now()}
 	}
 	return answer
@@ -42,7 +43,7 @@ func (oms *OpcMockServerStatic) Read() map[string]Item {
 //OpcMockServerRandom implements an OPC Server that returns a random value for each tag.
 type OpcMockServerRandom struct {
 	*emptyServer
-	Tags []string
+	TagList []string
 }
 
 func (oms *OpcMockServerRandom) ReadItem(tag string) Item {
@@ -52,7 +53,7 @@ func (oms *OpcMockServerRandom) ReadItem(tag string) Item {
 
 func (oms *OpcMockServerRandom) Read() map[string]Item {
 	answer := make(map[string]Item)
-	for _, tag := range oms.Tags {
+	for _, tag := range oms.TagList {
 		answer[tag] = Item{rand.Float64(), OPCQualityGood, time.Now()}
 	}
 	return answer
@@ -61,7 +62,7 @@ func (oms *OpcMockServerRandom) Read() map[string]Item {
 //OpcMockServerWakeUp implements an OPC Server that returns 1.0 for a certain duration then a random value for each tag.
 type OpcMockServerWakeUp struct {
 	*emptyServer
-	Tags    []string
+	TagList []string
 	AtSleep bool
 	mu      sync.Mutex
 }
@@ -87,7 +88,7 @@ func (oms *OpcMockServerWakeUp) Read() map[string]Item {
 	oms.mu.Lock()
 	defer oms.mu.Unlock()
 
-	for _, tag := range oms.Tags {
+	for _, tag := range oms.TagList {
 		if oms.AtSleep {
 			answer[tag] = Item{1.0, OPCQualityGood, time.Now()}
 		} else {
@@ -101,7 +102,7 @@ func (oms *OpcMockServerWakeUp) Read() map[string]Item {
 //FallAsleep Server, sets to 2.0 after time period (opposite of WakeUp server)
 type OpcMockServerFallAsleep struct {
 	*emptyServer
-	Tags    []string
+	TagList []string
 	AtSleep bool
 	mu      sync.Mutex
 }
@@ -127,7 +128,7 @@ func (oms *OpcMockServerFallAsleep) Read() map[string]Item {
 	oms.mu.Lock()
 	defer oms.mu.Unlock()
 
-	for _, tag := range oms.Tags {
+	for _, tag := range oms.TagList {
 		if oms.AtSleep {
 			answer[tag] = Item{2.0, OPCQualityGood, time.Now()}
 		} else {

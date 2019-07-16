@@ -43,6 +43,7 @@ type Connection interface {
 	Remove(string)
 	Read() map[string]Item
 	ReadItem(string) Item
+	Tags() []string
 	Write(string, interface{}) error
 	Close()
 }

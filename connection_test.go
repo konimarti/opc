@@ -1,6 +1,7 @@
 package opc
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -34,7 +35,7 @@ func TestNewConnectionNoTags(t *testing.T) {
 }
 
 func TestNewConnectionWithTags(t *testing.T) {
-	client,_ := NewConnection(
+	client, _ := NewConnection(
 		"Graybox.Simulator",
 		[]string{"localhost"},
 		[]string{"numeric.sin.int64", "numeric.saw.float"},
@@ -70,7 +71,6 @@ func TestNewConnectionWrongNode(t *testing.T) {
 
 }
 
-
 func TestAddTags(t *testing.T) {
 	client, _ := NewConnection(
 		"Graybox.Simulator",
@@ -90,6 +90,56 @@ func TestRemoveTags(t *testing.T) {
 	defer client.Close()
 	client.Remove("numeric.sin.int64")
 	client.Remove("numeric.saw.float")
+}
+
+func TestGetTags(t *testing.T) {
+	client, _ := NewConnection(
+		"Graybox.Simulator",
+		[]string{"localhost"},
+		[]string{},
+	)
+	defer client.Close()
+	var config = []struct {
+		Add    []string
+		Remove []string
+		Want   []string
+	}{
+		{
+			Add:  []string{"numeric.sin.float"},
+			Want: []string{"numeric.sin.float"},
+		},
+		{
+			Remove: []string{"numeric.sin.float"},
+			Want:   []string{},
+		},
+		{
+			Add:  []string{"numeric.saw.float"},
+			Want: []string{"numeric.saw.float"},
+		},
+		{
+			Remove: []string{"numeric.saw.float", "numeric.sin.float"},
+			Want:   []string{},
+		},
+	}
+
+	for _, cfg := range config {
+		if cfg.Add != nil {
+			client.Add(cfg.Add...)
+		}
+		if cfg.Remove != nil {
+			for _, tag := range cfg.Remove {
+				client.Remove(tag)
+			}
+		}
+		tags := client.Tags()
+		if !reflect.DeepEqual(tags, cfg.Want) {
+			if len(tags) != len(cfg.Want) || reflect.DeepEqual(tags, []string{}) {
+				fmt.Println("actual:", tags)
+				fmt.Println("expected:", cfg.Want)
+				t.Error("Tags() did not return correct tags")
+			}
+		}
+	}
 }
 
 func TestOpcRead(t *testing.T) {
