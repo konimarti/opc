@@ -5,7 +5,6 @@ package opc
 import (
 	"errors"
 	"fmt"
-	"log"
 	"sync"
 	"time"
 
@@ -61,13 +60,13 @@ func (ao *AutomationObject) CreateBrowser() (*Tree, error) {
 func buildTree(browser *ole.IDispatch, branch *Tree) {
 	var count int32
 
-	log.Println("Entering branch:", branch.Name)
+	logger.Println("Entering branch:", branch.Name)
 
 	// loop through leafs
 	oleutil.MustCallMethod(browser, "ShowLeafs").ToIDispatch()
 	count = oleutil.MustGetProperty(browser, "Count").Value().(int32)
 
-	log.Println("\tLeafs count:", count)
+	logger.Println("\tLeafs count:", count)
 
 	for i := 1; i <= int(count); i++ {
 
@@ -76,7 +75,7 @@ func buildTree(browser *ole.IDispatch, branch *Tree) {
 
 		l := Leaf{Name: item.(string), Tag: tag.(string)}
 
-		log.Println("\t", i, l)
+		logger.Println("\t", i, l)
 
 		branch.Leaves = append(branch.Leaves, l)
 	}
@@ -85,13 +84,13 @@ func buildTree(browser *ole.IDispatch, branch *Tree) {
 	oleutil.MustCallMethod(browser, "ShowBranches").ToIDispatch()
 	count = oleutil.MustGetProperty(browser, "Count").Value().(int32)
 
-	log.Println("\tBranches count:", count)
+	logger.Println("\tBranches count:", count)
 
 	for i := 1; i <= int(count); i++ {
 
 		nextName := oleutil.MustCallMethod(browser, "Item", i).Value()
 
-		log.Println("\t", i, "next branch:", nextName)
+		logger.Println("\t", i, "next branch:", nextName)
 
 		// move down
 		oleutil.MustCallMethod(browser, "MoveDown", nextName)
@@ -106,7 +105,7 @@ func buildTree(browser *ole.IDispatch, branch *Tree) {
 		oleutil.MustCallMethod(browser, "ShowBranches").ToIDispatch()
 	}
 
-	log.Println("Exiting branch:", branch.Name)
+	logger.Println("Exiting branch:", branch.Name)
 
 }
 
@@ -118,39 +117,39 @@ func (ao *AutomationObject) Connect(server string, node string) (*AutomationItem
 	if ao.IsConnected() {
 		_, err := oleutil.CallMethod(ao.object, "Disconnect")
 		if err != nil {
-			log.Println("Failed to disconnect. Trying to connect anyway..")
+			logger.Println("Failed to disconnect. Trying to connect anyway..")
 		}
 	}
 
 	// try to connect to opc server and check for error
-	log.Printf("Connecting to %s on node %s\n", server, node)
+	logger.Printf("Connecting to %s on node %s\n", server, node)
 	_, err := oleutil.CallMethod(ao.object, "Connect", server, node)
 	if err != nil {
-		log.Println("Connection failed.")
+		logger.Println("Connection failed.")
 		return nil, errors.New("Connection failed")
 	}
 
 	// set up opc groups and items
 	opcGroups, err := oleutil.GetProperty(ao.object, "OPCGroups")
 	if err != nil {
-		//log.Println(err)
+		//logger.Println(err)
 		return nil, errors.New("cannot get OPCGroups property")
 	}
 	opcGrp, err := oleutil.CallMethod(opcGroups.ToIDispatch(), "Add")
 	if err != nil {
-		// log.Println(err)
+		// logger.Println(err)
 		return nil, errors.New("cannot add new OPC Group")
 	}
 	addItemObject, err := oleutil.GetProperty(opcGrp.ToIDispatch(), "OPCItems")
 	if err != nil {
-		// log.Println(err)
+		// logger.Println(err)
 		return nil, errors.New("cannot get OPC Items")
 	}
 
 	opcGroups.ToIDispatch().Release()
 	opcGrp.ToIDispatch().Release()
 
-	log.Println("Connected.")
+	logger.Println("Connected.")
 
 	return NewAutomationItems(addItemObject.ToIDispatch()), nil
 }
@@ -175,7 +174,7 @@ func (ao *AutomationObject) IsConnected() bool {
 	}
 	stateVt, err := oleutil.GetProperty(ao.object, "ServerState")
 	if err != nil {
-		log.Println("GetProperty call for ServerState failed", err)
+		logger.Println("GetProperty call for ServerState failed", err)
 		return false
 	}
 	if stateVt.Value().(int32) != OPCRunning {
@@ -188,7 +187,7 @@ func (ao *AutomationObject) IsConnected() bool {
 func (ao *AutomationObject) GetOPCServers(node string) []string {
 	progids, err := oleutil.CallMethod(ao.object, "GetOPCServers", node)
 	if err != nil {
-		log.Println("GetOPCServers call failed.")
+		logger.Println("GetOPCServers call failed.")
 		return []string{}
 	}
 
@@ -219,10 +218,10 @@ func NewAutomationObject() *AutomationObject {
 	for _, wrapper := range wrappers {
 		unknown, err = oleutil.CreateObject(wrapper)
 		if err == nil {
-			log.Println("Loaded OPC Automation object with wrapper", wrapper)
+			logger.Println("Loaded OPC Automation object with wrapper", wrapper)
 			break
 		}
-		log.Println("Could not load OPC Automation object with wrapper", wrapper)
+		logger.Println("Could not load OPC Automation object with wrapper", wrapper)
 	}
 	if err != nil {
 		return &AutomationObject{}
@@ -354,10 +353,10 @@ func (conn *opcConnectionImpl) ReadItem(tag string) Item {
 		if err == nil {
 			return item
 		}
-		log.Printf("Cannot read %s: %s. Trying to fix.", tag, err)
+		logger.Printf("Cannot read %s: %s. Trying to fix.", tag, err)
 		conn.fix()
 	} else {
-		log.Printf("Tag %s not found. Add it first before reading it.", tag)
+		logger.Printf("Tag %s not found. Add it first before reading it.", tag)
 	}
 	return Item{}
 }
@@ -370,7 +369,7 @@ func (conn *opcConnectionImpl) Write(tag string, value interface{}) error {
 	if ok {
 		return conn.AutomationItems.writeToOpc(opcitem, value)
 	}
-	log.Printf("Tag %s not found. Add it first before writing to it.", tag)
+	logger.Printf("Tag %s not found. Add it first before writing to it.", tag)
 	return errors.New("No Write performed")
 }
 
@@ -382,7 +381,7 @@ func (conn *opcConnectionImpl) Read() map[string]Item {
 	for tag, opcitem := range conn.AutomationItems.items {
 		item, err := conn.AutomationItems.readFromOpc(opcitem)
 		if err != nil {
-			log.Printf("Cannot read %s: %s. Trying to fix.", tag, err)
+			logger.Printf("Cannot read %s: %s. Trying to fix.", tag, err)
 			conn.fix()
 			break
 		}
@@ -410,12 +409,12 @@ func (conn *opcConnectionImpl) fix() {
 			conn.AutomationItems.Close()
 			conn.AutomationItems, err = conn.TryConnect(conn.Server, conn.Nodes)
 			if err != nil {
-				log.Println(err)
+				logger.Println(err)
 				time.Sleep(100 * time.Millisecond)
 				continue
 			}
 			if conn.Add(tags...) == nil {
-				log.Printf("Added %d tags", len(tags))
+				logger.Printf("Added %d tags", len(tags))
 			}
 			break
 		}
@@ -461,7 +460,7 @@ func CreateBrowser(server string, nodes []string) (*Tree, error) {
 	defer object.Close()
 	_, err := object.TryConnect(server, nodes)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 	return object.CreateBrowser()
 }
