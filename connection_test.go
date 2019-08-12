@@ -142,6 +142,22 @@ func TestGetTags(t *testing.T) {
 	}
 }
 
+func TestTags(t *testing.T) {
+	var want []string
+	client := &opcConnectionImpl{}
+	tags := client.Tags()
+	if !reflect.DeepEqual(tags, want) {
+		fmt.Printf("actual: %+v\n", tags)
+		fmt.Printf("Want: %+v\n", want)
+		t.Error("Tags() should return a empty array of strings")
+	}
+}
+
+func TestAutomationItemsClose(t *testing.T) {
+	conn := &opcConnectionImpl{}
+	conn.AutomationItems.Close()
+}
+
 func TestOpcRead(t *testing.T) {
 	client, _ := NewConnection(
 		"Graybox.Simulator",
