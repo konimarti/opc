@@ -319,11 +319,13 @@ func (ai *AutomationItems) writeToOpc(opcitem *ole.IDispatch, value interface{})
 
 //Close closes the OLE objects in AutomationItems.
 func (ai *AutomationItems) Close() {
-	for key, opcitem := range ai.items {
-		opcitem.Release()
-		delete(ai.items, key)
+	if ai != nil {
+		for key, opcitem := range ai.items {
+			opcitem.Release()
+			delete(ai.items, key)
+		}
+		ai.addItemObject.Release()
 	}
-	ai.addItemObject.Release()
 }
 
 //NewAutomationItems returns a new AutomationItems instance.
@@ -393,10 +395,13 @@ func (conn *opcConnectionImpl) Read() map[string]Item {
 //Tags returns the currently active tags
 func (conn *opcConnectionImpl) Tags() []string {
 	var tags []string
-	for tag, _ := range conn.AutomationItems.items {
-		tags = append(tags, tag)
+	if conn.AutomationItems != nil {
+		for tag, _ := range conn.AutomationItems.items {
+			tags = append(tags, tag)
+		}
 	}
 	return tags
+
 }
 
 //fix tries to reconnect if connection is lost by creating a new connection
