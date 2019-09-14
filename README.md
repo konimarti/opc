@@ -41,6 +41,11 @@ opc.PrettyPrint(browser)
   - For 32-bit OPC servers and wrappers: DLL should be in ```C:\Windows\SysWOW64```, use ```$ENV:GOARCH="386"```
 * Make sure to have correct DCOM settings on your local and remote computers: ```Dcomcnfg.exe```
 
+### Reporting Issues
+
+* If you find a bug in the code, please create an issue and suggest a solution how to fix it.
+* Issues that are related to connection problems are mostly because of a faulty installation of your OPC automation wrapper or some peculiarties of your specific setup and OPC installation. Since we cannot debug your specific situation, these issues will be directly closed.
+
 ### Debugging
 
 * Add ```opc.Debug()``` before the ```opc.NewConnection``` call to print more debug-related information.
