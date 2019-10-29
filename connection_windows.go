@@ -280,7 +280,19 @@ func (ai *AutomationItems) Remove(tag string) {
 	}
 	delete(ai.items, tag)
 }
-
+/*
+ * FIX: 
+ * some opc servers sometimes returns an int32 Quality, that produces panic
+ */
+func ensureInt16(q interface{}) int16 {
+	if v16, ok := q.(int16); ok {
+		return v16
+	}
+	if v32, ok := q.(int32); ok && v32 >= 32768 && v32 < 32768 {
+		return int16(v32)
+	}
+	return 0
+}
 //readFromOPC reads from the server and returns an Item and error.
 func (ai *AutomationItems) readFromOpc(opcitem *ole.IDispatch) (Item, error) {
 	v := ole.NewVariant(ole.VT_R4, 0)
@@ -300,7 +312,7 @@ func (ai *AutomationItems) readFromOpc(opcitem *ole.IDispatch) (Item, error) {
 
 	return Item{
 		Value:     v.Value(),
-		Quality:   q.Value().(int16),
+		Quality:   ensureInt16(q.Value()), // FIX: ensure the quality value is int16
 		Timestamp: ts.Value().(time.Time),
 	}, nil
 }
