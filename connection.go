@@ -16,7 +16,8 @@ const (
 	//Bad
 	OPCQualityBad int16 = 0
 	//Good
-	OPCQualityGood int16 = 192
+	OPCQualityGood          int16 = 192
+	OPCQualityGoodButForced int16 = 216
 	//Maks
 	OPCQualityMask int16 = 192
 	//Uncertain
@@ -57,7 +58,7 @@ type Item struct {
 
 //Good checks the quality of the Item
 func (i *Item) Good() bool {
-	if i.Quality == OPCQualityGood {
+	if i.Quality == OPCQualityGood || i.Quality == OPCQualityGoodButForced {
 		return true
 	}
 	return false
