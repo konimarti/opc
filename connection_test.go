@@ -255,5 +255,16 @@ func TestOpcWrite(t *testing.T) {
 		if item.Value != cfg.Want {
 			t.Fatalf("tag has not been set to value. Got %v but expected %v", item.Value, cfg.Want)
 		}
+
+		// check quality
+		if item.Quality == OPCQualityGoodButForced {
+			if item.Good() != true {
+				t.Fatal("failed to check quality of item")
+			}
+		} else {
+			if item.Good() == true {
+				t.Fatal("failed to check quality of item")
+			}
+		}
 	}
 }
