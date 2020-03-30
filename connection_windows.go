@@ -113,13 +113,8 @@ func buildTree(browser *ole.IDispatch, branch *Tree) {
 //It returns a reference to AutomationItems and error message.
 func (ao *AutomationObject) Connect(server string, node string) (*AutomationItems, error) {
 
-	// check if server is running, if yes then disconnect
-	if ao.IsConnected() {
-		_, err := oleutil.CallMethod(ao.object, "Disconnect")
-		if err != nil {
-			logger.Println("Failed to disconnect. Trying to connect anyway..")
-		}
-	}
+	// make sure there is not active connection before trying to connect
+	ao.disconnect()
 
 	// try to connect to opc server and check for error
 	logger.Printf("Connecting to %s on node %s\n", server, node)
@@ -200,9 +195,20 @@ func (ao *AutomationObject) GetOPCServers(node string) []string {
 	return servers_found
 }
 
+//Disconnect checks if connected to server and if so, it calls 'disconnect'
+func (ao *AutomationObject) disconnect() {
+	if ao.IsConnected() {
+		_, err := oleutil.CallMethod(ao.object, "Disconnect")
+		if err != nil {
+			logger.Println("Failed to disconnect.")
+		}
+	}
+}
+
 //Close releases the OLE objects in the AutomationObject.
 func (ao *AutomationObject) Close() {
 	if ao.object != nil {
+		ao.disconnect()
 		ao.object.Release()
 	}
 	if ao.unknown != nil {
@@ -282,7 +288,7 @@ func (ai *AutomationItems) Remove(tag string) {
 }
 
 /*
- * FIX: 
+ * FIX:
  * some opc servers sometimes returns an int32 Quality, that produces panic
  */
 func ensureInt16(q interface{}) int16 {
@@ -294,6 +300,7 @@ func ensureInt16(q interface{}) int16 {
 	}
 	return 0
 }
+
 //readFromOPC reads from the server and returns an Item and error.
 func (ai *AutomationItems) readFromOpc(opcitem *ole.IDispatch) (Item, error) {
 	v := ole.NewVariant(ole.VT_R4, 0)
