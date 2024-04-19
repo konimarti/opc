@@ -47,6 +47,7 @@ type Connection interface {
 	Tags() []string
 	Write(string, interface{}) error
 	Close()
+	IsConnected() bool
 }
 
 //Item stores the result of an OPC item from the OPC server.
