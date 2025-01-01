@@ -1,0 +1,8 @@
+server: "Graybox.Simulator"
+nodes: [ "localhost" ]
+tags: [ "numeric.sin.float", "numeric.sin.int32" ]
+refreshRate: "10s"
+mqtt:
+  addr: "tcp://localhost:1883"
+  topic: "test/opc"
+
