@@ -253,10 +253,10 @@ func NewAutomationObject() *AutomationObject {
 //AutomationItems store the OPCItems from OPCGroup and does the bookkeeping
 //for the individual OPC items. Tags can added, removed, and read.
 type AutomationItems struct {
-	addItemObject   *ole.IDispatch
-	items           map[string]*ole.IDispatch
-	nextClientHandle int32  // Add client handle counter
-	mu              sync.Mutex  // Add a mutex to protect the counter
+	addItemObject    *ole.IDispatch
+	items            map[string]*ole.IDispatch
+	nextClientHandle int32      // Add client handle counter
+	mu               sync.Mutex // Add a mutex to protect the counter
 }
 
 //addSingle adds the tag and returns an error. Client handles are properly managed now.
@@ -265,7 +265,7 @@ func (ai *AutomationItems) addSingle(tag string) error {
 	ai.nextClientHandle++
 	clientHandle := ai.nextClientHandle
 	ai.mu.Unlock()
-	
+
 	item, err := oleutil.CallMethod(ai.addItemObject, "AddItem", tag, clientHandle)
 	if err != nil {
 		return errors.New(tag + ":" + err.Error())
@@ -362,9 +362,9 @@ func (ai *AutomationItems) Close() {
 //NewAutomationItems returns a new AutomationItems instance.
 func NewAutomationItems(opcitems *ole.IDispatch) *AutomationItems {
 	ai := AutomationItems{
-		addItemObject:    opcitems, 
-		items:           make(map[string]*ole.IDispatch),
-		nextClientHandle: 0,  // Initialize the client handle counter
+		addItemObject:    opcitems,
+		items:            make(map[string]*ole.IDispatch),
+		nextClientHandle: 0, // Initialize the client handle counter
 	}
 	return &ai
 }
@@ -444,8 +444,8 @@ func (conn *opcConnectionImpl) Tags() []string {
 func (conn *opcConnectionImpl) fix() {
 	var err error
 	if !conn.IsConnected() {
+		tags := conn.Tags()
 		for {
-			tags := conn.Tags()
 			conn.AutomationItems.Close()
 			conn.AutomationItems, err = conn.TryConnect(conn.Server, conn.Nodes)
 			if err != nil {
